@@ -7,3 +7,6 @@ struct Comanda {
     int cantidad;
     float comision;
 };
+int main (){
+
+}
