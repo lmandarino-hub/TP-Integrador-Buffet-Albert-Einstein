@@ -5,10 +5,12 @@ using namespace std;
 
 const float TASA_COMISION = 0.10f;
 
-struct ventas
+struct Producto
 { 
-    int ClaveProducto; 
+    int codigo;
+    char descrippcion[50];
     float precio;
+    int stockActual; 
 };
 
 struct Mozo
@@ -18,6 +20,15 @@ struct Mozo
     char PassWord[20];
     float TotalCOMISION;
 };
+
+struct ventas
+{
+    int idMozo;
+    int Idproducto;
+    int cantidad; 
+    float comision; 
+};
+
 
 int main(){
     string fecha; 
