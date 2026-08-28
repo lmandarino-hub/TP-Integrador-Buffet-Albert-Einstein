@@ -9,6 +9,40 @@ struct Comanda {
     float comision;
 };
 
+void apareo(const char* ArchivoA, const char* ArchivoB, const char* ArchivoSalida){
+    FILE* a = fopen(ArchivoA, "rb");
+    FILE* b = fopen(ArchivoB, "rb");
+    FILE* salida = fopen(ArchivoSalida, "wb");
+
+    if(a == NULL || b == NULL || salida == NULL) {
+        return;
+    }
+    Comanda ca, cb;
+    int la = fread(&ca, sizeof(Comanda), 1, a);
+    int lb = fread(&cb, sizeof(Comanda), 1, b);
+
+    while (la == 1 && lb == 1) {
+        if (ca.idMozo < cb.idMozo) {
+            fwrite(&ca, sizeof(Comanda), 1, salida);
+            la = fread(&ca, sizeof(Comanda), 1, a);
+        } else {
+            fwrite(&cb, sizeof(Comanda), 1, salida);
+            lb = fread(&cb, sizeof(Comanda), 1, b);
+    }
+}
+    while (la == 1){
+        fwrite(&ca, sizeof(Comanda), 1, salida);
+        la = fread(&ca, sizeof(Comanda), 1, a);
+    }
+    while (lb == 1){
+        fwrite(&cb, sizeof(Comanda), 1, salida);
+        lb = fread(&cb, sizeof(Comanda), 1, b);
+    }
+    fclose (a);
+    fclose (b);
+    fclose(salida);
+}
+
 int main (){
     int semana;
     int mes;
