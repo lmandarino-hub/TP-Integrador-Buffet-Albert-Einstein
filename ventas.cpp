@@ -29,32 +29,34 @@ struct ventas
     float comision; 
 };
 
-//funcion de login (prueba 1)
-void ClaveDeAcceso(char*calve){
-   if (clave==PassWord)
-    {
-        cout<<"clave correcta bienvenido "<<Nombre; 
-   }
-   else
-   {
-   cout<<"clave incorrecta"; 
-   }
-
+//funcion de login (prueba 2 funciona(base))
+void ClaveDeAcceso(){
+    Mozo m; 
+    m.idMozo; 
+   strcpy (m.PassWord,"hola"); 
+    char clave[20]; 
+ cout<<"ingrese su id: "; 
+ cin>>m.idMozo; 
+ cout<<"ingrese su clave: "; 
+ cin>>clave;
+if  (strcmp(clave, m.PassWord) == 0)
+{
+    cout<<"clave correcta "; 
+}
+else
+{  
+    cout<<"clave incorrecta "; 
+    exit (0); //cambiar 
 }
 
+}
+// abrir/crear plantilla del dia (prueba x)
 int main(){
-    Mozo mozo1 ; 
-    Mozo mozoy;
-    mozo1.PassWord= "hola"; 
-    mozoy.Nombre="christian"; 
-    string fecha;
-    string clave;
-    cout<<"ingrese su clave: "; 
-    cin>>clave; 
-    cout<<ClaveDeAcceso;  
-    cout<<"ingrese la fecha de hoy (dd-mm-aaaa): "; 
+    string fecha; 
+    ClaveDeAcceso(); //mover 
+    cout<< endl <<"ingrese la fecha de hoy (dd-mm-aaaa): "; 
     cin>>fecha; 
-
+    
     string Fecha= "Comandas_"+fecha + ".dat"; 
     
 
