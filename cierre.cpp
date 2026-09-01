@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstring>
+#include <cstdio>
+
 using namespace std;
 
 struct Comanda {
@@ -42,7 +44,16 @@ void apareo(const char* ArchivoA, const char* ArchivoB, const char* ArchivoSalid
     fclose (b);
     fclose(salida);
 }
+// verificar si existe archivo diario
+bool existeArchivo(const char* nombreArchivo) {
+    FILE* archivo = fopen(nombreArchivo, "rb");
+    if (archivo) {
+        fclose(archivo);
+        return true;
+    }
+    return false;
 
+}
 int main (){
     int semana;
     int mes;
@@ -51,5 +62,12 @@ int main (){
     cin >> semana;
     cout << "Ingrese el mes (1-12):";
     cin >> mes;
+
+    int diaInicio;
+    int diaFin;
+
+    diaInicio = (semana - 1) * 7 + 1;
+    diaFin = diaInicio + 6;
+    cout << "La semana va del dia" << diaInicio << " al dia " << diaFin << endl;
 
 }
