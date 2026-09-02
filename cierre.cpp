@@ -63,11 +63,14 @@ int main (){
     cout << "Ingrese el mes (1-12):";
     cin >> mes;
 
-    int diaInicio;
-    int diaFin;
+    if (semana < 1 || semana > 4) {
+        cout << "Error" << endl;
+        return 0;
+    }
+    if (mes < 1 || mes > 12) {
+        cout << "Error" << endl;
+        return 0;
+    }
 
-    diaInicio = (semana - 1) * 7 + 1;
-    diaFin = diaInicio + 6;
-    cout << "La semana va del dia" << diaInicio << " al dia " << diaFin << endl;
 
 }
