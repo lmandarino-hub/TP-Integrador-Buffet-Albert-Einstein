@@ -54,6 +54,24 @@ bool existeArchivo(const char* nombreArchivo) {
     return false;
 
 }
+void crearArchivoSemanal(const char* nombreArchivo, const char* nombreArchivoDiario){
+    FILE* archivoSemanal = fopen(nombreArchivo, "wb");
+    if (archivoSemanal == NULL) {
+        cout << "Error al crear el archivo semanal." << endl;
+        return;
+    }
+    FILE* archivoDiario = fopen(nombreArchivoDiario, "rb");
+    if (archivoDiario == NULL) {
+        fclose(archivoSemanal);
+        return;
+    }
+    Comanda c;
+    while (fread(&c, sizeof(Comanda), 1, archivoDiario) == 1) {
+        fwrite(&c, sizeof(Comanda), 1, archivoSemanal);
+    }
+    fclose(archivoSemanal);
+    fclose(archivoDiario);
+}
 int main (){
     int semana;
     int mes;
