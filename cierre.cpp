@@ -90,5 +90,32 @@ int main (){
         return 0;
     }
 
+char semanaTexto[10];
+if (semana==1) {
+    strcpy(semanaTexto, "1");
+} else if (semana==2) {
+    strcpy(semanaTexto, "2");
+} else if (semana==3) {
+    strcpy(semanaTexto, "3");
+} else if (semana==4) {
+    strcpy(semanaTexto, "4");
+}
 
+char mesTexto[10];
+if (mes<10){
+    mesTexto[0]='0';
+    mesTexto[1]=mes+'0';
+    mesTexto[2]='\0';
+} else {
+    mesTexto[0]=(mes/10)+'0';
+    mesTexto[1]=(mes%10)+'0';
+    mesTexto[2]='\0';
+}
+
+char nombreArchvivoSemanal[50];
+strcpy(nombreArchvivoSemanal, "comandas_semana_s");
+
+int diasDelMes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+int diaInicio=(semana - 1) * 7 + 1;
+int diaFin;
 }
