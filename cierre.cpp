@@ -11,6 +11,16 @@ struct Comanda {
     float comision;
 };
 
+int CopiarTexto(char destino[], int pos, const char* texto){
+    int i = 0;
+    while (texto[i] != '\0') {
+        destino[pos] = texto[i];
+        i++;
+        pos++;
+    }
+    return pos;
+}
+
 void apareo(const char* ArchivoA, const char* ArchivoB, const char* ArchivoSalida){
     FILE* a = fopen(ArchivoA, "rb");
     FILE* b = fopen(ArchivoB, "rb");
@@ -112,10 +122,52 @@ if (mes<10){
     mesTexto[2]='\0';
 }
 
-char nombreArchvivoSemanal[50];
-strcpy(nombreArchvivoSemanal, "comandas_semana_s");
+char nombreArchivoSemanal[50];
+int pos=0;
+pos=CopiarTexto(nombreArchivoSemanal, pos, "comandas_semanas_s");
+pos=CopiarTexto(nombreArchivoSemanal, pos, semanaTexto);
+pos=CopiarTexto(nombreArchivoSemanal, pos, "_");
+pos=CopiarTexto(nombreArchivoSemanal, pos, mesTexto);
+pos=CopiarTexto(nombreArchivoSemanal, pos, ".dat");
+nombreArchivoSemanal[pos]='\0';
 
 int diasDelMes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 int diaInicio=(semana - 1) * 7 + 1;
 int diaFin;
+if (semana ==4){
+    diaFin=diasDelMes[mes];
+}else{
+    diaFin=semana*7;
+}
+char temp_1[50];
+char temp_2[50];
+char archivoAnterior[50];
+int cantArchivos=0;
+int temporal=1;
+char diaTexto[3];
+for (int dia=diaInicio; dia<=diaFin; dia++){
+    if (dia<10){
+        diaTexto[0]='0';
+        diaTexto[1]=dia+'0';
+        diaTexto[2]='\0';
+    } else {
+        diaTexto[0]=(dia/10)+'0';
+        diaTexto[1]=(dia%10)+'0';
+        diaTexto[2]='\0';
+    }
+}
+
+char archivoDiario[50];
+int p=0;
+p = CopiarTexto(archivoDiario, p, "comandas_");
+p = CopiarTexto(archivoDiario, p, diaTexto);
+p = CopiarTexto(archivoDiario, p, "_");
+p = CopiarTexto(archivoDiario, p, mesTexto);
+p= CopiarTexto(archivoDiario, p , "2026.dat");
+archivoDiario[p]='\0';
+
+if (existeArchivo(archivoDiario)){
+    cout << "Archivo diario encontrado: " << archivoDiario << endl;
+    
+}
 }
