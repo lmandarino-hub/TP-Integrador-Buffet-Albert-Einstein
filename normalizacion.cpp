@@ -72,6 +72,20 @@ int buscarMozo(Mozo lista_de_mozo[], int cantidad_de_mozos, int idBuscado){
         return i;
     }
 }
+
+void Calcular_totalComision(Mozo lista_de_mozos[], int cantidad_de_mozos, Comanda lista_de_comandas[], int cantidad_de_comandas){
+    for (int i = 0; i < cantidad_de_mozos; i++){
+        float totalComision = 0;
+        for (int j = 0; j < cantidad_de_comandas; j++){
+            if (lista_de_mozos[i].idMozo == lista_de_comandas[j].idMozo){
+                totalComision += lista_de_comandas[j].comision;
+            }
+        }
+        lista_de_mozos[i].totalComision = totalComision;
+    }
+}
+
+
 void generarMozoDat(){
     FILE* mozo = fopen("mozo.dat","rb");
     if (mozo == NULL) {
@@ -95,38 +109,26 @@ void generarMozoDat(){
     }
     Comanda c;
     while (fread(&c,sizeof(Mozo),1,mozo_totalComision) == 1){   
-        int pos = buscarMozo(lista_de_mozos,cantidad_de_mozos,c.idMozo);
+        int posicion_del_mozo = buscarMozo(lista_de_mozos,cantidad_de_mozos,c.idMozo);
 
-        if (pos != -1){
-            lista_de_mozos[pos].totalComision += (c.comision * c.cantidad);
+        if (posicion_del_mozo != -1){
+            lista_de_mozos[posicion_del_mozo].totalComision += (c.comision * c.cantidad);
         }
     }
     fclose(mozo_totalComision);
-}
-
-
-
-void Calcular_totalComision(Mozo lista_de_mozos[], int cantidad_de_mozos, Comanda lista_de_comandas[], int cantidad_de_comandas){
-    for (int i = 0; i < cantidad_de_mozos; i++){
-        float totalComision = 0;
-        for (int j = 0; j < cantidad_de_comandas; j++){
-            if (lista_de_mozos[i].idMozo == lista_de_comandas[j].idMozo){
-                totalComision += lista_de_comandas[j].comision;
-            }
-        }
-        lista_de_mozos[i].totalComision = totalComision;
+    FILE* mozo_terminado = fopen("mozo.dat","wb");
+    if (mozo_terminado == NULL){
+        cout << "Error al abrir/generar mozo.dat" << endl;
+    }
+    for (int i = 0; i < cantidad_de_mozos;i++){
+        fwrite(&lista_de_mozos[i],sizeof(Mozo),1,mozo_terminado);
+        fclose(mozo_terminado);
     }
 }
 
 
 
 int main(){
-    int cantidad_de_mozos = 3;
-    Mozo lista_de_mozo[3] = {
-        {1, "romeo", "pass123", 0.0f},
-        {2, "christian", "pass456", 0.0f},
-        {3, "ramos", "pass789", 0.0f}
-    };
-    mostrarIDdeMozo(lista_de_mozo,cantidad_de_mozos);
+    generarMozoDat();
     return 0;
 }
