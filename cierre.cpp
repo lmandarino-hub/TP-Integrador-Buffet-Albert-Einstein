@@ -124,6 +124,7 @@ if (mes<10){
 
 char nombreArchivoSemanal[50];
 int pos=0;
+
 pos=CopiarTexto(nombreArchivoSemanal, pos, "comandas_semanas_s");
 pos=CopiarTexto(nombreArchivoSemanal, pos, semanaTexto);
 pos=CopiarTexto(nombreArchivoSemanal, pos, "_");
@@ -139,11 +140,12 @@ if (semana ==4){
 }else{
     diaFin=semana*7;
 }
-char temp_1[50];
-char temp_2[50];
+char temp_1[50]="temp_1.dat";
+char temp_2[50]="temp_2.dat";
 char archivoAnterior[50];
 int cantArchivos=0;
 int temporal=1;
+
 char diaTexto[3];
 for (int dia=diaInicio; dia<=diaFin; dia++){
     if (dia<10){
@@ -168,6 +170,28 @@ archivoDiario[p]='\0';
 
 if (existeArchivo(archivoDiario)){
     cout << "Archivo diario encontrado: " << archivoDiario << endl;
-    
+
+if (cantArchivos == 0){
+    strcpy(archivoAnterior, archivoDiario);
+}else{
+    if (temporal==1){
+        apareo(archivoAnterior, archivoDiario, temp_1);
+        strcpy(archivoAnterior, temp_1);
+        temporal=2;
+    }else {
+        apareo(archivoAnterior, archivoDiario, temp_2);
+        strcpy(archivoAnterior, temp_2);
+        temporal=1;
+    }
 }
+cantArchivos++;
+}
+if (cantArchivos > 0){
+    crearArchivoSemanal(nombreArchivoSemanal, archivoAnterior);
+    cout <<"Archivo creado" << nombreArchivoSemanal << endl;
+}else{
+    cout << "No se encontraron archivos diarios" << endl;
+}
+
+return 0;
 }
