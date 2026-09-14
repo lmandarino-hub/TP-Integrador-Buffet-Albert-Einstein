@@ -127,12 +127,12 @@ int pos=0;
 
 pos=CopiarTexto(nombreArchivoSemanal, pos, "comandas_semanas_s");
 pos=CopiarTexto(nombreArchivoSemanal, pos, semanaTexto);
-pos=CopiarTexto(nombreArchivoSemanal, pos, "_");
+pos=CopiarTexto(nombreArchivoSemanal, pos, "-");
 pos=CopiarTexto(nombreArchivoSemanal, pos, mesTexto);
 pos=CopiarTexto(nombreArchivoSemanal, pos, ".dat");
 nombreArchivoSemanal[pos]='\0';
 
-int diasDelMes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+int diasDelMes[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 int diaInicio=(semana - 1) * 7 + 1;
 int diaFin;
 if (semana ==4){
@@ -157,13 +157,12 @@ for (int dia=diaInicio; dia<=diaFin; dia++){
         diaTexto[1]=(dia%10)+'0';
         diaTexto[2]='\0';
     }
-}
 
 char archivoDiario[50];
 int p=0;
 p = CopiarTexto(archivoDiario, p, "comandas_");
 p = CopiarTexto(archivoDiario, p, diaTexto);
-p = CopiarTexto(archivoDiario, p, "_");
+p = CopiarTexto(archivoDiario, p, "-");
 p = CopiarTexto(archivoDiario, p, mesTexto);
 p= CopiarTexto(archivoDiario, p , "2026.dat");
 archivoDiario[p]='\0';
@@ -186,6 +185,8 @@ if (cantArchivos == 0){
 }
 cantArchivos++;
 }
+}
+
 if (cantArchivos > 0){
     crearArchivoSemanal(nombreArchivoSemanal, archivoAnterior);
     cout <<"Archivo creado" << nombreArchivoSemanal << endl;
