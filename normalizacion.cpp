@@ -43,7 +43,7 @@ void mostrarIDdeMozo(Mozo lista_de_mozo[], int cantidad_de_mozos){
         cout<< "Nombre: " << lista_de_mozo[i].Nombre << endl;
     }
 }
-// como los datos se encontraran desordenados, utilizo ordenamiento por seleccion para ordenar los datos
+// como los datos se encontraron desordenados, utilizo ordenamiento por seleccion para ordenar los datos.
 void ordenarPorID(Mozo lista_de_mozos[], int cantidad_de_mozos){
     for (int i = 0; i < cantidad_de_mozos - 1; i++) {
         int minIdx = i;
@@ -90,10 +90,12 @@ void generarMozoDat(){
     FILE* mozo = fopen("mozo.dat","rb");
     if (mozo == NULL) {
         cout << "no se pudo generar el archivo."<< endl;
+        return; /* corta la ejecucion si no abre*/
     }
     Mozo lista_de_mozos[50];
     int cantidad_de_mozos = 0;
     Mozo m;
+
     while(fread(&m,sizeof(Mozo),1,mozo) == 1 && cantidad_de_mozos < 50){
         m.totalComision = 0.0f;
         lista_de_mozos[cantidad_de_mozos] = m;
@@ -101,14 +103,16 @@ void generarMozoDat(){
     }
     fclose(mozo);
 
+    //ordena a los mozos por id
     ordenarPorID(lista_de_mozos,cantidad_de_mozos);
 
     FILE* mozo_totalComision = fopen("comandasHistoricas.dat","rb");
     if (mozo_totalComision == NULL){
         cout << "Error al abrir comandasHistoricas.dat" << endl;
+        return; /* corta la ejecucion si no abre*/
     }
     Comanda c;
-    while (fread(&c,sizeof(Mozo),1,mozo_totalComision) == 1){   
+    while (fread(&c,sizeof(Comanda),1,mozo_totalComision) == 1){   
         int posicion_del_mozo = buscarMozo(lista_de_mozos,cantidad_de_mozos,c.idMozo);
 
         if (posicion_del_mozo != -1){
@@ -119,11 +123,12 @@ void generarMozoDat(){
     FILE* mozo_terminado = fopen("mozo.dat","wb");
     if (mozo_terminado == NULL){
         cout << "Error al abrir/generar mozo.dat" << endl;
+        return; /* corta la ejecucion si no abre*/
     }
     for (int i = 0; i < cantidad_de_mozos;i++){
         fwrite(&lista_de_mozos[i],sizeof(Mozo),1,mozo_terminado);
-        fclose(mozo_terminado);
     }
+    fclose(mozo_terminado);
 }
 
 
