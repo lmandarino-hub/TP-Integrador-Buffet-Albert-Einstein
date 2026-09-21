@@ -29,7 +29,7 @@ struct ventas
     float comision; 
 };
 
-//funcion de login (prueba 2 funciona(base))
+//funcion de Mozo (probar funciona)
 void ClaveDeAcceso(){
     Mozo m; 
     m.idMozo; 
@@ -40,7 +40,7 @@ void ClaveDeAcceso(){
         return false; 
     }
     while(fread(&mozo,sizeof(Mozo),1,f)==1){
-        if (m.idMozo==m.PassWord)
+        if (m.idMozo==id_Original)
         {
             fclose(f);
             return true; 
@@ -48,15 +48,22 @@ void ClaveDeAcceso(){
          
     } 
    
- cout<<"ingrese su id: "; 
- cin>>m.idMozo; 
- cout<<"ingrese su clave: "; 
- cin>>clave;
-
+    return false; 
 }
 
+//funcion para validar al mozo
+bool ClaveV (Mozo mozo){   
+     char clave[20]; 
+     cout<<"ingrese su clave: "; 
+     cin>>clave;
+      if (clave==m.PassWord)
+        { 
+            return true;   
+        }
+        return false;  
+ }
 
-//funcion comandasH 
+//funcion comandasH (Base, probar)
 void ComandasHistoricas(){
     FILE* f = fopen("ComandasHistoricas", "ab+");
        if (f==null )
