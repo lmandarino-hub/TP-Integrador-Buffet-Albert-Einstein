@@ -47,11 +47,11 @@ void ClaveDeAcceso(){
         }
          
     } 
-   
+    fclose(f); 
     return false; 
 }
 
-//funcion para validar al mozo
+//funcion para validar al mozo(probar)
 bool ClaveV (Mozo mozo){   
      char clave[20]; 
      cout<<"ingrese su clave: "; 
@@ -62,6 +62,26 @@ bool ClaveV (Mozo mozo){
         }
         return false;  
  }
+
+//funcion para buscar un producto (probar)
+bool BProducto(int C_Producto, Producto,&producto){ 
+    FILE* f=fopen("inventario.dat","rb"); 
+    if(f==null){
+        cout<<"el archivo no se puede ejecutar."; 
+        return false; 
+    }
+    while (fread(&producto,sizeof(producto),1,f )==1){
+        if (producto==C_Producto)
+        {
+            fclose(f);
+            return true; 
+        }
+        
+    }
+    fclose(f);
+    return false; 
+    
+}
 
 //funcion comandasH (Base, probar)
 void ComandasHistoricas(){
