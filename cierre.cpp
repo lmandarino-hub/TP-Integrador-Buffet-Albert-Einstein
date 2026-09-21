@@ -125,7 +125,7 @@ if (mes<10){
 char nombreArchivoSemanal[50];
 int pos=0;
 
-pos=CopiarTexto(nombreArchivoSemanal, pos, "comandas_semanas_s");
+pos=CopiarTexto(nombreArchivoSemanal, pos, "comandas_semana_s");
 pos=CopiarTexto(nombreArchivoSemanal, pos, semanaTexto);
 pos=CopiarTexto(nombreArchivoSemanal, pos, "-");
 pos=CopiarTexto(nombreArchivoSemanal, pos, mesTexto);
@@ -164,7 +164,7 @@ p = CopiarTexto(archivoDiario, p, "comandas_");
 p = CopiarTexto(archivoDiario, p, diaTexto);
 p = CopiarTexto(archivoDiario, p, "-");
 p = CopiarTexto(archivoDiario, p, mesTexto);
-p= CopiarTexto(archivoDiario, p , "2026.dat");
+p= CopiarTexto(archivoDiario, p , "-2026.dat");
 archivoDiario[p]='\0';
 
 if (existeArchivo(archivoDiario)){
