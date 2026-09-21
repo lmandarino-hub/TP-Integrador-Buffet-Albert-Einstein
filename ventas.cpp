@@ -83,6 +83,21 @@ bool BProducto(int C_Producto, Producto,&producto){
     
 }
 
+//funcion para orednar las ventas 
+
+void O_ventas(Ventas[], int Cant_Ventas) {
+    for (int i = 0; i < Cant_Ventas - 1; i++) {
+        for (int j = 0; j < len - i - 1; j++) {
+            if (Ventas.idMozo[j] > ventas.idMozo[j + 1]) {
+                ventas = Ventas[j];
+                ventas[j] = ventas[j + 1];
+                ventas[j + 1] = Ventas;
+                }
+            }
+        }
+}
+
+
 //funcion comandasH (Base, probar)
 void ComandasHistoricas(){
     FILE* f = fopen("ComandasHistoricas", "ab+");
