@@ -33,23 +33,41 @@ struct ventas
 void ClaveDeAcceso(){
     Mozo m; 
     m.idMozo; 
-   strcpy (m.PassWord,"hola"); 
-    char clave[20]; 
+    FILE* f = fopen("Mozos.dat", "rb");
+    if (f==null)
+    {
+        cout<<"no se puede abrir el archivo con los mozos";
+        return false; 
+    }
+    while(fread(&mozo,sizeof(Mozo),1,f)==1){
+        if (m.idMozo==m.PassWord)
+        {
+            fclose(f);
+            return true; 
+        }
+         
+    } 
+   
  cout<<"ingrese su id: "; 
  cin>>m.idMozo; 
  cout<<"ingrese su clave: "; 
  cin>>clave;
-if  (strcmp(clave, m.PassWord) == 0)
-{
-    cout<<"clave correcta "; 
-}
-else
-{  
-    cout<<"clave incorrecta "; 
-    exit (0); //cambiar 
-}
 
 }
+
+
+//funcion comandasH 
+void ComandasHistoricas(){
+    FILE* f = fopen("ComandasHistoricas", "ab+");
+       if (f==null )
+       {
+        cout<<"el archivo no se puede crear";     
+       }
+        return f;  
+       
+}
+
+
 // abrir/crear plantilla del dia (prueba x)
 int main(){
     string fecha; 
@@ -57,7 +75,7 @@ int main(){
     cout<< endl <<"ingrese la fecha de hoy (dd-mm-aaaa): "; 
     cin>>fecha; 
     
-    string Fecha= "Comandas_"+fecha + ".dat"; 
+    string Fecha= "ComandasHistoricas"+fecha + ".dat"; 
     
 
     return 0; 
