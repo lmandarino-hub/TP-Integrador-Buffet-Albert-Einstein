@@ -83,18 +83,34 @@ bool BProducto(int C_Producto, Producto,&producto){
     
 }
 
-//funcion para orednar las ventas 
+//funcion para ordenar las ventas (probar)
 
 void O_ventas(Ventas[], int Cant_Ventas) {
     for (int i = 0; i < Cant_Ventas - 1; i++) {
         for (int j = 0; j < len - i - 1; j++) {
             if (Ventas.idMozo[j] > ventas.idMozo[j + 1]) {
-                ventas = Ventas[j];
+                Ventas = ventas[j];
                 ventas[j] = ventas[j + 1];
                 ventas[j + 1] = Ventas;
                 }
             }
         }
+}
+
+//funcion para mostrar las ventas
+void M_Ventas(ventas[], int C_Ventas)
+{
+    cout << endl;
+    cout << "===== VENTAS CARGADAS =====" << endl;
+
+    for (int i = 0; i < cantidadVentas; i++)
+    {
+        cout << "Mozo: " << ventas[i].idMozo
+             << " | Producto: " << ventas[i].Idproducto
+             << " | Cantidad: " << ventas[i].cantidad
+             << " | Comision: $" << ventas[i].comision
+             << endl;
+    }
 }
 
 
