@@ -97,7 +97,7 @@ void O_ventas(Ventas[], int Cant_Ventas) {
         }
 }
 
-//funcion para mostrar las ventas
+//funcion para mostrar las ventas (probar) 
 void M_Ventas(ventas[], int C_Ventas)
 {
     cout << endl;
@@ -114,27 +114,27 @@ void M_Ventas(ventas[], int C_Ventas)
 }
 
 
-//funcion comandasH (Base, probar)
-void ComandasHistoricas(){
-    FILE* f = fopen("ComandasHistoricas", "ab+");
-       if (f==null )
-       {
-        cout<<"el archivo no se puede crear";     
-       }
-        return f;  
-       
-}
 
 
-// abrir/crear plantilla del dia (prueba x)
+
+
+
+// abrir/crear plantilla del dia (prueba)
 int main(){
     string fecha; 
-    ClaveDeAcceso(); //mover 
-    cout<< endl <<"ingrese la fecha de hoy (dd-mm-aaaa): "; 
+    cout<< endl <<"ingrese la fecha de hoy (dd_mm_aaaa): "; 
     cin>>fecha; 
+    string Nombre_A= "Comandas_"+fecha + ".dat"; 
+    cout<<endl; 
+    cout<<"plantilla del dia: "<<Nombre_A<<endl; 
     
-    string Fecha= "ComandasHistoricas"+fecha + ".dat"; 
+    FILE* f = fopen(Nombre_A.c_str(), "ab+");
+    if (f==null )
+    {
+        cout<<"el archivo no se puede crear"<<endl;     
+    }
+    return 1;  
     
-
+    
     return 0; 
 }
