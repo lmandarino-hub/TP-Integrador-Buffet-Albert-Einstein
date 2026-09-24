@@ -114,14 +114,12 @@ void M_Ventas(ventas[], int C_Ventas)
 }
 
 
-
-
-
-
-
 // abrir/crear plantilla del dia (prueba)
 int main(){
     string fecha; 
+    ventas listaVentas[VENTAS_M];
+    int Cant_Ventas=0; 
+    char continuar ='s'; 
     cout<< endl <<"ingrese la fecha de hoy (dd_mm_aaaa): "; 
     cin>>fecha; 
     string Nombre_A= "Comandas_"+fecha + ".dat"; 
@@ -135,6 +133,30 @@ int main(){
     }
     return 1;  
     
+    while (Cant_Ventas<VENTAS_M && fread(&listaVentas[Cant_Ventas],sizeof(ventas),1,f)==1)
+    {
+        Cant_Ventas++; 
+    }
+    
+    while (continuar=='s')
+    {
+        int idmozo; 
+        cout << "nueva venta"<<endl; 
+
+        cout <<"ingrese id del mozo"; 
+        cin>>idmozo
+        Mozo mozo; 
+
+        if (id_Original(idmozo,mozo)){
+            cout<<"el mozo no existe."<<endl; 
+            continue;
+        }
+        
+        
+    }
+    
+
+
     
     return 0; 
 }
