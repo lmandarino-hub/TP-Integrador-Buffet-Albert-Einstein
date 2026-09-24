@@ -223,8 +223,26 @@ int main(){
 
    fclose(f); 
 
-   
+   ordenarVentas(listaVentas;Cant_Ventas); 
 
+   FILE* fordenado=fopen (Nombre_A.c_str(),"wb"); 
+
+   if(fordenado==null){
+    cout<<"no se puede abrir "<<endl; 
+    return 1; 
+
+   }
+
+   for(int i=0; i<Cant_Ventas; i++){
+    fwriten(listaVentas[i],sizeof(ventas),1,fordenado); 
+   } 
+ 
+ fclose(fordenado); 
+
+  mostrarVentas(listaVentas,Cant_Ventas); 
+  cout<<"carga finalizada"<<endl; 
+  cout<<"archivo: "<<Nombre_A<<endl; 
+  cout<<"ventas totales: "<<Cant_Ventas<<endl; 
  
 
     return 0; 
