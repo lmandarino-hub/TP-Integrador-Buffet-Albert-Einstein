@@ -124,7 +124,7 @@ int main(){
     int cantidad; 
     float totalVenta;
     float comision;
-    ventas nuevaVEnta; 
+    venta nuevaVEnta; 
 
     cout<< endl <<"ingrese la fecha de hoy (dd_mm_aaaa): "; 
     cin>>fecha; 
@@ -150,7 +150,7 @@ int main(){
         cout << "nueva venta"<<endl; 
 
         cout <<"ingrese id del mozo"; 
-        cin>>idmozo
+        cin>>idmozo;
         Mozo mozo; 
 
         if (id_Original(idmozo,mozo)){
@@ -183,13 +183,13 @@ int main(){
     cin>>cantidad; 
 
     if(cantidad<=0){
-        cout<<"la cantidad debe ser mayor a cero."<<endl 
+        cout<<"la cantidad debe ser mayor a cero."<<endl; 
         continue; 
     }
    
     if (cantidad>producto.stockActual)
     {
-        cout<<"no hay suficiente stock."<<endl 
+        cout<<"no hay suficiente stock."<<endl; 
         continue; 
     }
      
@@ -202,8 +202,28 @@ int main(){
     nuevaVEnta.cantiad=cantidad; 
     nuevaVEnta.comision=somision; 
 
+   if(Cant_Ventas<VENTAS_M){
+    listaVentas[Cant_Ventas]=nuevaVEnta; 
+    Cant_Ventas++; 
+   }
+   else 
+   {
+    cout<<"se alcanzo el limite de ventas."<<endl; 
+    break; 
+   }
 
-    
+   fwrite(nuevaVEnta,sizeof(ventas),1,f); 
+   cout<<"venta guardada."<<endl; 
+   cout<<"total de ventas:"<<totalVenta<<endl; 
+   cout<<"la comision es: "<<comision<<endl; 
+
+   cout<<"quiere cargar otra venta: "; 
+   cin>>continuar; 
+
+
+   fclose(f); 
+
+   
 
  
 
