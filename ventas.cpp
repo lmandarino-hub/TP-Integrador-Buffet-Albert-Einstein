@@ -120,7 +120,12 @@ int main(){
     ventas listaVentas[VENTAS_M];
     int Cant_Ventas=0; 
     char continuar ='s'; 
-    int codigo_prod
+    int codigo_prod;
+    int cantidad; 
+    float totalVenta;
+    float comision;
+    ventas nuevaVEnta; 
+
     cout<< endl <<"ingrese la fecha de hoy (dd_mm_aaaa): "; 
     cin>>fecha; 
     string Nombre_A= "Comandas_"+fecha + ".dat"; 
@@ -174,6 +179,33 @@ int main(){
         cout<<"stock disponible: "<<producto.stockActual<<endl; 
         cout<<"precio: "<<producto.precio<<endl;  
 
+    cout<<"ingrese la cantidad: "; 
+    cin>>cantidad; 
+
+    if(cantidad<=0){
+        cout<<"la cantidad debe ser mayor a cero."<<endl 
+        continue; 
+    }
+   
+    if (cantidad>producto.stockActual)
+    {
+        cout<<"no hay suficiente stock."<<endl 
+        continue; 
+    }
+     
+    totalVenta=producto.precio*cantidad; 
+    comision=totalVenta*TASA_COMISION; 
+   
+
+    nuevaVEnta.idMozo=idMozo; 
+    nuevaVEnta.idproducto=codigo_prod; 
+    nuevaVEnta.cantiad=cantidad; 
+    nuevaVEnta.comision=somision; 
+
+
     
+
+ 
+
     return 0; 
 }
