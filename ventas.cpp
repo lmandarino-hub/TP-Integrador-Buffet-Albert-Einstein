@@ -120,6 +120,7 @@ int main(){
     ventas listaVentas[VENTAS_M];
     int Cant_Ventas=0; 
     char continuar ='s'; 
+    int codigo_prod
     cout<< endl <<"ingrese la fecha de hoy (dd_mm_aaaa): "; 
     cin>>fecha; 
     string Nombre_A= "Comandas_"+fecha + ".dat"; 
@@ -151,11 +152,27 @@ int main(){
             cout<<"el mozo no existe."<<endl; 
             continue;
         }
-        
-        
-    }
+     }
     
 
+    if(ClaveV(mozo)){
+        cout<<"clave incorrecta."<<endl; 
+        continue;
+    }
+    cout<<"clave correcta."<<endl; 
+    
+
+    cout<<"ingrese el codigo del producto: ";
+    cin>>codigo_prod; 
+    Producto producto; 
+    
+    if(BProducto(codigo_prod,producto)){
+         cout<<"el producto no existe."<<endl; 
+         continue; 
+    }
+        cout<<"producto:"<<producto.descrippcion<<endl; 
+        cout<<"stock disponible: "<<producto.stockActual<<endl; 
+        cout<<"precio: "<<producto.precio<<endl;  
 
     
     return 0; 
