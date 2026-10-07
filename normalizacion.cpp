@@ -155,23 +155,17 @@ struct ventaHistorica{
     float comision;
 };
 
+struct comandaHistorica {
+    char fecha[11];        // "DD-MM-AAAA"
+    char nombreMozo[50];   // el nombre completo, repetido en cada venta
+    int codigoProducto;    int cantidad;    float comision;
+};
 
-void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos){
-
-Producto inventario[100];
-    int cant_inventario = 0;
-    FILE* archInv = fopen("inventario.dat", "rb");
-    if (archInv != NULL) {
-        while (fread(&inventario[cant_inventario], sizeof(Producto), 1, archInv) == 1) {
-            cant_inventario++;
-        }
-        fclose(archInv);
-    }
-}
-
-comandaTemp lista_comandas[1000]; // Arreglo para guardar todo temporalmente
+void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
+    comandaTemp lista_comandas[1000]; // array para guardar todas las comandas temporalmente
     int cant_comandas = 0;
     
+    // Leer ventas historicas
     FILE* ventasHistorico = fopen("comandas_historicas.dat", "rb");
     if (ventasHistorico == NULL) {
         cout << "Error al abrir comandas_historicas.dat" << endl;
@@ -179,26 +173,129 @@ comandaTemp lista_comandas[1000]; // Arreglo para guardar todo temporalmente
     }
 
     comandaHistorica v;
-    while (fread(&v, sizeof(ComandaHistorica), 1, ventasHistorico) == 1) {
-
-    // busca la ID del mozo por su nombre
-    int posicion_del_mozo = buscarMozoPorNombre(lista_de_mozos, cantidad_de_mozos, v.nombreMozo);
-    int idMozo = (posicion_del_mozo != -1) ? lista_de_mozos[posicion_del_mozo].idMozo : 0;
-    int idReal = 0;
-    if (posMozo != -1) {
+    while (fread(&v, sizeof(comandaHistorica), 1, ventasHistorico) == 1) {
+        // Buscamos el ID del mozo usando su nombre
+        int posMozo = buscarMozoPorNombre(lista_de_mozos, cantidad_de_mozos, v.nombreMozo);
+        int idReal = 0;
+        if (posMozo != -1) {
             idReal = lista_de_mozos[posMozo].idMozo;
         }
-    // guarda en el array temporal con el nuevo formato
-    strcpy(lista_comandas[cant_comandas].fecha, v.fecha);
-    lista_comandas[cant_comandas].datos.idMozo = idMozo;
-    lista_comandas[cant_comandas].datos.codigoProducto = v.codigoProducto;
-    lista_comandas[cant_comandas].datos.cantidad = v.cantidad;
-    lista_comandas[cant_comandas].datos.comision = v.comision;
-    cant_comandas++;
+
+        // Guardamos en el array temporal con el nuevo formato de Comanda
+        strcpy(lista_comandas[cant_comandas].fecha, v.fecha);
+        lista_comandas[cant_comandas].datos.idMozo = idReal;
+        lista_comandas[cant_comandas].datos.codigoProducto = v.codigoProducto;
+        lista_comandas[cant_comandas].datos.cantidad = v.cantidad;
+        lista_comandas[cant_comandas].datos.comision = v.comision;
+        
+        cant_comandas++;
+    }
+    fclose(ventasHistorico);
+
+    // Ordenas comandas (Primero por fecha, despues por idMozo para que queden agrupadas)
+    for (int i = 0; i < cant_comandas - 1; i++) {
+        for (int j = i + 1; j < cant_comandas; j++) {
+            // Si la fecha j es menor (va antes), o si son la misma fecha pero el idMozo j es menor
+            if (strcmp(lista_comandas[j].fecha, lista_comandas[i].fecha) < 0 || 
+               (strcmp(lista_comandas[j].fecha, lista_comandas[i].fecha) == 0 && 
+                lista_comandas[j].datos.idMozo < lista_comandas[i].datos.idMozo)) {
+                
+                // Intercambio
+                comandaTemp aux = lista_comandas[i];
+                lista_comandas[i] = lista_comandas[j];
+                lista_comandas[j] = aux;
+            }
+        }
+    }
+
+    // Corte de control para generar archivos diarios
+    int i = 0;
+    while (i < cant_comandas) {
+        // Nos guardamos la fecha que rige para este grupo
+        char fechaActual[11];
+        strcpy(fechaActual, lista_comandas[i].fecha); 
+
+        // Armamos el nombre del archivo: "comandas_DD-MM-AAAA.dat"
+        char nombreArchivo[50];
+        strcpy(nombreArchivo, "comandas_");
+        strcat(nombreArchivo, fechaActual);
+        strcat(nombreArchivo, ".dat");
+
+        // Al abrir en "wb", crea un archivo nuevo para este día
+        FILE* archivoDia = fopen(nombreArchivo, "wb");
+
+        // Mientras no nos pasemos del total y la fecha siga siendo la misma (corte de control)
+        while (i < cant_comandas && strcmp(lista_comandas[i].fecha, fechaActual) == 0) {
+            // Grabamos sólo la parte 'datos' que es el struct Comanda original
+            fwrite(&lista_comandas[i].datos, sizeof(Comanda), 1, archivoDia);
+            i++; // Avanzamos al siguiente registro
+        }
+        
+        // Cuando cambia la fecha (termina el while interno), cerramos el archivo del día
+        fclose(archivoDia); 
+    }
     
-    for(int i = 0; i < cant_inventario)
+    cout << "Ventas separadas exitosamente por dia." << endl;
+}
+
+void actualizarStock() {
+    // 1. CARGAR EL INVENTARIO EN MEMORIA
+    Producto inventario[200]; // Arreglo con tamaño de sobra para los productos
+    int cant_inventario = 0;
+    
+    FILE* archInv = fopen("inventario.dat", "rb");
+    if (archInv != NULL) {
+        while (fread(&inventario[cant_inventario], sizeof(Producto), 1, archInv) == 1) {
+            cant_inventario++;
+        }
+        fclose(archInv);
+    } else {
+        cout << "Error: No se pudo abrir inventario.dat." << endl;
+        return;
+    }
+
+    // 2. LEER VENTAS HISTÓRICAS Y RESTAR STOCK
+    FILE* ventasHistorico = fopen("comandas_historicas.dat", "rb");
+    if (ventasHistorico != NULL) {
+        ventaHistorica v; // Usá el nombre de tu struct acá (ventaHistorica o ComandaHistorica)
+        
+        while (fread(&v, sizeof(ventaHistorica), 1, ventasHistorico) == 1) {
+            // Buscamos el producto vendido en nuestro arreglo
+            for(int i = 0; i < cant_inventario; i++) {
+                if(inventario[i].codigo == v.codigoProducto) {
+                    
+                    // Restamos la cantidad vendida
+                    inventario[i].stockActual -= v.cantidad;
+                    
+                    // CASO RARO PARA EL ORAL: Evitar stock negativo
+                    if (inventario[i].stockActual < 0) {
+                        inventario[i].stockActual = 0;
+                    
+                    }
+                    
+                    break; // Cortamos el for porque ya actualizamos este producto
+                }
+            }
+        }
+        fclose(ventasHistorico);
+    } else {
+        cout << "Error: No se pudo abrir comandas_historicas.dat" << endl;
+        return;
+    }
+
+    // Sobrescribir el archivo con el stock actualizado
+    archInv = fopen("inventario.dat", "wb");
+    if (archInv != NULL) {
+        for(int i = 0; i < cant_inventario; i++) {
+            fwrite(&inventario[i], sizeof(Producto), 1, archInv);
+        }
+        fclose(archInv);
+        cout << "Stock actualizado exitosamente en inventario.dat." << endl;
+    }
+}
 
 int main(){
     generarMozoDat();
+    actualizarStock();
     return 0;
 }
