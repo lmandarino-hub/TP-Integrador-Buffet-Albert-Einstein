@@ -131,7 +131,72 @@ void generarMozoDat(){
     fclose(mozo_terminado);
 }
 
+int buscarMozoPorNombre(Mozo lista_de_mozos[], int cantidad_de_mozos, const char* nombreBuscado) {
+    for (int i = 0; i < cantidad_de_mozos; i++) {
+        if (strcmp(lista_de_mozos[i].Nombre, nombreBuscado) == 0) {
+            return i; // Retorna el índice del mozo encontrado
+        }
+    }
+    return -1; // Retorna -1 si no se encuentra el mozo
+}
 
+// Struct temporal para ordenar los datos en memoria antes de guardarlos
+struct comandaTemp {
+    char fecha[11];
+    Comanda datos;
+};
+
+struct ventaHistorica{
+
+    char fecha[11];
+    char nombreMozo[50];
+    int codigoProducto;
+    int cantidad;
+    float comision;
+};
+
+
+void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos){
+
+Producto inventario[100];
+    int cant_inventario = 0;
+    FILE* archInv = fopen("inventario.dat", "rb");
+    if (archInv != NULL) {
+        while (fread(&inventario[cant_inventario], sizeof(Producto), 1, archInv) == 1) {
+            cant_inventario++;
+        }
+        fclose(archInv);
+    }
+}
+
+comandaTemp lista_comandas[1000]; // Arreglo para guardar todo temporalmente
+    int cant_comandas = 0;
+    
+    FILE* ventasHistorico = fopen("comandas_historicas.dat", "rb");
+    if (ventasHistorico == NULL) {
+        cout << "Error al abrir comandas_historicas.dat" << endl;
+        return;
+    }
+
+    comandaHistorica v;
+    while (fread(&v, sizeof(ComandaHistorica), 1, ventasHistorico) == 1) {
+
+    // busca la ID del mozo por su nombre
+    int posicion_del_mozo = buscarMozoPorNombre(lista_de_mozos, cantidad_de_mozos, v.nombreMozo);
+    int idMozo = (posicion_del_mozo != -1) ? lista_de_mozos[posicion_del_mozo].idMozo : 0;
+    int idReal = 0;
+    if (posMozo != -1) {
+            idReal = lista_de_mozos[posMozo].idMozo;
+        }
+    // guarda en el array temporal con el nuevo formato
+    strcpy(lista_comandas[cant_comandas].fecha, v.fecha);
+    lista_comandas[cant_comandas].datos.idMozo = idMozo;
+    lista_comandas[cant_comandas].datos.codigoProducto = v.codigoProducto;
+    lista_comandas[cant_comandas].datos.cantidad = v.cantidad;
+    lista_comandas[cant_comandas].datos.comision = v.comision;
+    cant_comandas++;
+    
+    for(int i = 0; i < cant_inventario)
 
 int main(){
     generarMozoDat();
