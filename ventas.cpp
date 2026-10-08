@@ -29,7 +29,7 @@ struct ventas
     float comision; 
 };
 
-//funcion de Mozo (probar funciona)
+//funcion de Mozo 
 void ClaveDeAcceso(){
     Mozo m; 
     m.idMozo; 
@@ -51,22 +51,22 @@ void ClaveDeAcceso(){
     return false; 
 }
 
-//funcion para validar al mozo(probar)
+//funcion para validar al mozo
 bool ClaveV (Mozo mozo){   
      char clave[20]; 
      cout<<"ingrese su clave: "; 
      cin>>clave;
-      if (clave==m.PassWord)
+      if (strcmp(clave==m.PassWord)==0) 
         { 
             return true;   
         }
         return false;  
  }
 
-//funcion para buscar un producto (probar)
+//funcion para buscar un producto
 bool BProducto(int C_Producto, Producto,&producto){ 
     FILE* f=fopen("inventario.dat","rb"); 
-    if(f==null){
+    if(f==NULL){
         cout<<"el archivo no se puede ejecutar."; 
         return false; 
     }
@@ -83,15 +83,15 @@ bool BProducto(int C_Producto, Producto,&producto){
     
 }
 
-//funcion para ordenar las ventas (probar)
+//funcion para ordenar las ventas 
 
-void O_ventas(Ventas[], int Cant_Ventas) {
+void O_ventas(Ventas listaVentas[], int Cant_Ventas) {
     for (int i = 0; i < Cant_Ventas - 1; i++) {
         for (int j = 0; j < len - i - 1; j++) {
-            if (Ventas.idMozo[j] > ventas.idMozo[j + 1]) {
-                Ventas = ventas[j];
-                ventas[j] = ventas[j + 1];
-                ventas[j + 1] = Ventas;
+            if (listaVentas[j].idMozo > listaVentas[j + 1].idMozo) {
+                VentaS = listaVentas[j];
+                listaVentas[j] = listaVentas[j + 1];
+                listaVentas[j + 1] = VentaS;
                 }
             }
         }
@@ -105,39 +105,33 @@ void M_Ventas(ventas[], int C_Ventas)
 
     for (int i = 0; i < cantidadVentas; i++)
     {
-        cout << "Mozo: " << ventas[i].idMozo
-             << " | Producto: " << ventas[i].Idproducto
-             << " | Cantidad: " << ventas[i].cantidad
-             << " | Comision: $" << ventas[i].comision
+        cout << "Mozo: " << listaVentas[i].idMozo
+             << " | Producto: " << listaVentas[i].Idproducto
+             << " | Cantidad: " << listaVentas[i].cantidad
+             << " | Comision: $" << listaVentas[i].comision
              << endl;
     }
 }
 
 
-// abrir/crear plantilla del dia (prueba)
+// main 
 int main(){
     string fecha; 
     ventas listaVentas[VENTAS_M];
     int Cant_Ventas=0; 
     char continuar ='s'; 
-    int codigo_prod;
-    int cantidad; 
-    float totalVenta;
-    float comision;
-    venta nuevaVEnta; 
-
+    
     cout<< endl <<"ingrese la fecha de hoy (dd_mm_aaaa): "; 
     cin>>fecha; 
     string Nombre_A= "Comandas_"+fecha + ".dat"; 
-    cout<<endl; 
-    cout<<"plantilla del dia: "<<Nombre_A<<endl; 
+    cout<<"plantilla del dia: "<< Nombre_A <<endl; 
     
     FILE* f = fopen(Nombre_A.c_str(), "ab+");
-    if (f==null )
+    if (f==NULL)
     {
         cout<<"el archivo no se puede crear"<<endl;     
+        return 1;  
     }
-    return 1;  
     
     while (Cant_Ventas<VENTAS_M && fread(&listaVentas[Cant_Ventas],sizeof(ventas),1,f)==1)
     {
