@@ -4,6 +4,7 @@
 using namespace std; 
 //tasa de comision  dado por el profe
 const float TASA_COMISION = 0.10f;
+const int M_ventas = 100;
 //struct (revisar)
 struct Producto
 { 
@@ -30,22 +31,21 @@ struct ventas
 };
 
 //funcion de Mozo 
-void ClaveDeAcceso(){
+bool ClaveDeAcceso(int id_buscado, Mozo &mozoEncontrado){
     Mozo m; 
-    m.idMozo; 
     FILE* f = fopen("Mozos.dat", "rb");
-    if (f==null)
+    if (f==NULL)
     {
         cout<<"no se puede abrir el archivo con los mozos";
         return false; 
     }
-    while(fread(&mozo,sizeof(Mozo),1,f)==1){
-        if (m.idMozo==id_Original)
+    while(fread(&m,sizeof(Mozo),1,f)==1){
+        if (m.idMozo==id_buscado)
         {
+            mozoEncontrado= m; 
             fclose(f);
             return true; 
-        }
-         
+        }   
     } 
     fclose(f); 
     return false; 
@@ -56,7 +56,7 @@ bool ClaveV (Mozo mozo){
      char clave[20]; 
      cout<<"ingrese su clave: "; 
      cin>>clave;
-      if (strcmp(clave==m.PassWord)==0) 
+      if (strcmp(clave,mozo.PassWord)==0) 
         { 
             return true;   
         }
@@ -64,14 +64,14 @@ bool ClaveV (Mozo mozo){
  }
 
 //funcion para buscar un producto
-bool BProducto(int C_Producto, Producto,&producto){ 
+bool BProducto(int C_Producto, Producto &producto){ 
     FILE* f=fopen("inventario.dat","rb"); 
     if(f==NULL){
         cout<<"el archivo no se puede ejecutar."; 
         return false; 
     }
     while (fread(&producto,sizeof(producto),1,f )==1){
-        if (producto==C_Producto)
+        if (producto.codigo == C_Producto)
         {
             fclose(f);
             return true; 
@@ -85,9 +85,10 @@ bool BProducto(int C_Producto, Producto,&producto){
 
 //funcion para ordenar las ventas 
 
-void O_ventas(Ventas listaVentas[], int Cant_Ventas) {
+void Orden_ventas(ventas listaVentas[], int Cant_Ventas) {
+    ventas VentaS; 
     for (int i = 0; i < Cant_Ventas - 1; i++) {
-        for (int j = 0; j < len - i - 1; j++) {
+        for (int j = 0; j < Cant_Ventas - i - 1; j++) {
             if (listaVentas[j].idMozo > listaVentas[j + 1].idMozo) {
                 VentaS = listaVentas[j];
                 listaVentas[j] = listaVentas[j + 1];
@@ -98,7 +99,7 @@ void O_ventas(Ventas listaVentas[], int Cant_Ventas) {
 }
 
 //funcion para mostrar las ventas (probar) 
-void M_Ventas(ventas[], int C_Ventas)
+void Mostrar_Ventas(ventas listaVentas[], int cantidadVentas)
 {
     cout << endl;
     cout << "===== VENTAS CARGADAS =====" << endl;
@@ -117,7 +118,7 @@ void M_Ventas(ventas[], int C_Ventas)
 // main 
 int main(){
     string fecha; 
-    ventas listaVentas[VENTAS_M];
+    ventas listaVentas[M_ventas];
     int Cant_Ventas=0; 
     char continuar ='s'; 
     
@@ -133,7 +134,7 @@ int main(){
         return 1;  
     }
     
-    while (Cant_Ventas<VENTAS_M && fread(&listaVentas[Cant_Ventas],sizeof(ventas),1,f)==1)
+    while (Cant_Ventas<M_ventas && fread(&listaVentas[Cant_Ventas],sizeof(ventas),1,f)==1)
     {
         Cant_Ventas++; 
     }
@@ -150,10 +151,10 @@ int main(){
             cout<<"el mozo no existe."<<endl; 
             continue;
         }
-     }
+     
     
 
-    if(ClaveV(mozo)){
+    if (!ClaveV(mozo)){
         cout<<"clave incorrecta."<<endl; 
         continue;
     }
@@ -193,13 +194,13 @@ int main(){
     float comision=totalVenta * TASA_COMISION; 
    
 
-    ventas nuevaVEnta
+    ventas nuevaVEnta;
     nuevaVEnta.idMozo = idmozo; 
-    nuevaVEnta.idproducto = codigo_prod; 
+    nuevaVEnta.Idproducto = codigo_prod; 
     nuevaVEnta.cantidad = cantidad; 
     nuevaVEnta.comision = comision; 
 
-   if(Cant_Ventas < VENTAS_M){
+   if(Cant_Ventas < M_ventas){
      listaVentas[Cant_Ventas] = nuevaVEnta; 
      Cant_Ventas++;
      fwrite(&nuevaVEnta, sizeof(ventas), 1, f);
@@ -210,7 +211,7 @@ int main(){
      else 
      { 
      cout <<"Se alcanzo el limite de ventas." <<endl; 
-     break; 
+      
      }
 
      cout<<"Quiere cargar otra venta: "; 
@@ -221,7 +222,7 @@ int main(){
 
    fclose(f); 
 
-   ordenarVentas(listaVentas, Cant_Ventas); 
+   Orden_ventas(listaVentas, Cant_Ventas); 
 
    FILE* fordenado=fopen (Nombre_A.c_str(),"wb"); 
 
@@ -232,12 +233,12 @@ int main(){
    }
 
    for(int i=0; i<Cant_Ventas; i++){
-    fwriten(&listaVentas[i],sizeof(ventas),1,fordenado); 
+    fwrite(&listaVentas[i],sizeof(ventas),1,fordenado); 
    } 
  
  fclose(fordenado); 
 
-  mostrarVentas(listaVentas,Cant_Ventas); 
+  Mostrar_Ventas(listaVentas,Cant_Ventas); 
   cout<<"carga finalizada"<<endl; 
   cout<<"archivo: "<<Nombre_A<<endl; 
   cout<<"ventas totales: "<<Cant_Ventas<<endl; 
@@ -245,3 +246,4 @@ int main(){
 
     return 0; 
 }
+  }
