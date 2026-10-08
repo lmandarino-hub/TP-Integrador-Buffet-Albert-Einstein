@@ -138,16 +138,15 @@ int main(){
         Cant_Ventas++; 
     }
     
-    while (continuar=='s')
+    while (continuar=='s'||continuar == 'S')
     {
         int idmozo; 
-        cout << "nueva venta"<<endl; 
-
-        cout <<"ingrese id del mozo"; 
+        cout << "Nueva Venta"<<endl; 
+        cout <<"ingrese id del mozo: "; 
         cin>>idmozo;
         Mozo mozo; 
 
-        if (id_Original(idmozo,mozo)){
+        if (!ClaveDeAcceso(idmozo,mozo)){
             cout<<"el mozo no existe."<<endl; 
             continue;
         }
@@ -160,75 +159,80 @@ int main(){
     }
     cout<<"clave correcta."<<endl; 
     
+    int codigo_prod; 
 
     cout<<"ingrese el codigo del producto: ";
     cin>>codigo_prod; 
     Producto producto; 
     
-    if(BProducto(codigo_prod,producto)){
-         cout<<"el producto no existe."<<endl; 
+    if(!BProducto(codigo_prod, producto)){
+         cout<<"El producto no existe."<<endl; 
          continue; 
     }
-        cout<<"producto:"<<producto.descrippcion<<endl; 
-        cout<<"stock disponible: "<<producto.stockActual<<endl; 
-        cout<<"precio: "<<producto.precio<<endl;  
+        cout<<"producto:"<<producto.descrippcion <<endl; 
+        cout<<"stock disponible: "<<producto.stockActual <<endl; 
+        cout<<"precio: "<<producto.precio <<endl;  
+    
+        int cantidad; 
+    
+        cout<<"ingrese la cantidad: "; 
+        cin>>cantidad; 
 
-    cout<<"ingrese la cantidad: "; 
-    cin>>cantidad; 
-
-    if(cantidad<=0){
-        cout<<"la cantidad debe ser mayor a cero."<<endl; 
+       if(cantidad<=0){
+        cout<<"La cantidad debe ser mayor a cero." <<endl; 
         continue; 
-    }
+       }
    
-    if (cantidad>producto.stockActual)
-    {
-        cout<<"no hay suficiente stock."<<endl; 
+       if (cantidad>producto.stockActual)
+       {
+        cout<< "No hay suficiente stock." <<endl; 
         continue; 
-    }
+       }
      
-    totalVenta=producto.precio*cantidad; 
-    comision=totalVenta*TASA_COMISION; 
+    float totalVenta=producto.precio * cantidad; 
+    float comision=totalVenta * TASA_COMISION; 
    
 
-    nuevaVEnta.idMozo=idMozo; 
-    nuevaVEnta.idproducto=codigo_prod; 
-    nuevaVEnta.cantiad=cantidad; 
-    nuevaVEnta.comision=somision; 
+    ventas nuevaVEnta
+    nuevaVEnta.idMozo = idmozo; 
+    nuevaVEnta.idproducto = codigo_prod; 
+    nuevaVEnta.cantidad = cantidad; 
+    nuevaVEnta.comision = comision; 
 
-   if(Cant_Ventas<VENTAS_M){
-    listaVentas[Cant_Ventas]=nuevaVEnta; 
-    Cant_Ventas++; 
-   }
-   else 
-   {
-    cout<<"se alcanzo el limite de ventas."<<endl; 
-    break; 
-   }
+   if(Cant_Ventas < VENTAS_M){
+     listaVentas[Cant_Ventas] = nuevaVEnta; 
+     Cant_Ventas++;
+     fwrite(&nuevaVEnta, sizeof(ventas), 1, f);
+     cout << "ventas guardadas. " << endl; 
+     cout << "Total de ventas: $" << totalVenta << endl;  
+     cout << "comision: $" <<comision << endl;   
+     }
+     else 
+     { 
+     cout <<"Se alcanzo el limite de ventas." <<endl; 
+     break; 
+     }
 
-   fwrite(nuevaVEnta,sizeof(ventas),1,f); 
-   cout<<"venta guardada."<<endl; 
-   cout<<"total de ventas:"<<totalVenta<<endl; 
-   cout<<"la comision es: "<<comision<<endl; 
+     cout<<"Quiere cargar otra venta: "; 
+     cin>>continuar; 
+    
 
-   cout<<"quiere cargar otra venta: "; 
-   cin>>continuar; 
 
 
    fclose(f); 
 
-   ordenarVentas(listaVentas;Cant_Ventas); 
+   ordenarVentas(listaVentas, Cant_Ventas); 
 
    FILE* fordenado=fopen (Nombre_A.c_str(),"wb"); 
 
-   if(fordenado==null){
+   if(fordenado==NULL){
     cout<<"no se puede abrir "<<endl; 
     return 1; 
 
    }
 
    for(int i=0; i<Cant_Ventas; i++){
-    fwriten(listaVentas[i],sizeof(ventas),1,fordenado); 
+    fwriten(&listaVentas[i],sizeof(ventas),1,fordenado); 
    } 
  
  fclose(fordenado); 
