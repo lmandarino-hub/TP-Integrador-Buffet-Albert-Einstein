@@ -132,6 +132,8 @@ pos=CopiarTexto(nombreArchivoSemanal, pos, mesTexto);
 pos=CopiarTexto(nombreArchivoSemanal, pos, ".dat");
 nombreArchivoSemanal[pos]='\0';
 
+// se tiene en cuenta que todos los meses solo tienen 28 dias (4 semanas completas),
+// por lo que los dias 29, 30 y 31 no se consideran en el proceso de cierre semanal.
 int diaInicio=(semana - 1) * 7 + 1;
 int diaFin= semana * 7;
 
