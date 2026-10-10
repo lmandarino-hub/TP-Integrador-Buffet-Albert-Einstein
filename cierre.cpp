@@ -85,7 +85,7 @@ void crearArchivoSemanal(const char* nombreArchivo, const char* nombreArchivoDia
 int main (){
     int semana;
     int mes;
-    int anio=2026;
+
     cout << "Ingrese la semana (1-4):";
     cin >> semana;
     cout << "Ingrese el mes (1-12):";
