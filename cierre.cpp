@@ -132,14 +132,9 @@ pos=CopiarTexto(nombreArchivoSemanal, pos, mesTexto);
 pos=CopiarTexto(nombreArchivoSemanal, pos, ".dat");
 nombreArchivoSemanal[pos]='\0';
 
-int diasDelMes[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 int diaInicio=(semana - 1) * 7 + 1;
-int diaFin;
-if (semana ==4){
-    diaFin=diasDelMes[mes];
-}else{
-    diaFin=semana*7;
-}
+int diaFin= semana * 7;
+
 char temp_1[50]="temp_1.dat";
 char temp_2[50]="temp_2.dat";
 char archivoAnterior[50];
