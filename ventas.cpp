@@ -50,17 +50,23 @@ bool ClaveDeAcceso(int id_buscado, Mozo &mozoEncontrado){
     fclose(f); 
     return false; 
 }
+//funcion de cifrado de clave 
+void CifrarClave(char clave[])
+{
+    for (int i = 0; clave[i] != '\0'; i++)
+    {
+        clave[i] = clave[i] + K;
+    }
+}
+
 
 //funcion para validar al mozo
-bool ClaveV (Mozo mozo){   
+bool ClaveV (conts Mozo &mozo){   
      char clave[20]; 
      cout<<"ingrese su clave: "; 
-     cin>>clave;
-      if (strcmp(clave,mozo.PassWord)==0) 
-        { 
-            return true;   
-        }
-        return false;  
+     cin>>setw(20)>>clave;
+      CifrarClave(calve);
+      return stcmp(clave,mozo.PassWord)==0;  
  }
 
 //funcion para buscar un producto
@@ -83,7 +89,7 @@ bool BProducto(int C_Producto, Producto &producto){
     
 }
 
-//funcion para ordenar las ventas 
+//funcion para ordenar las ventas con el id del mozo 
 
 void Orden_ventas(ventas listaVentas[], int Cant_Ventas) {
     ventas VentaS; 
@@ -98,7 +104,7 @@ void Orden_ventas(ventas listaVentas[], int Cant_Ventas) {
         }
 }
 
-//funcion para mostrar las ventas (probar) 
+//funcion para mostrar las ventas 
 void Mostrar_Ventas(ventas listaVentas[], int cantidadVentas)
 {
     cout << endl;
