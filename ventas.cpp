@@ -2,10 +2,12 @@
 #include <cstdio>
 #include <cstring> 
 using namespace std; 
-//tasa de comision  dado por el profe
+//tasa de comision  
 const float TASA_COMISION = 0.10f;
+
 const int M_ventas = 100;
-//struct (revisar)
+
+//structs 
 struct Producto
 { 
     int codigo;
