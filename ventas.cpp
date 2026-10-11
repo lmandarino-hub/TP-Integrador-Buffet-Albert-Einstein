@@ -64,9 +64,10 @@ void CifrarClave(char clave[])
 bool ClaveV (const Mozo &mozo){   
      char clave[20]; 
      cout<<"ingrese su clave: "; 
-     cin>>setw(20)>>clave;
-      CifrarClave(calve);
-      return stcmp(clave,mozo.PassWord)==0;  
+     cin.width(20); 
+     cin>>clave;
+      CifrarClave(clave);
+      return strcmp(clave,mozo.PassWord)==0;  
  }
 
 //funcion para buscar un producto
