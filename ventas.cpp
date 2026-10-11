@@ -55,13 +55,13 @@ void CifrarClave(char clave[])
 {
     for (int i = 0; clave[i] != '\0'; i++)
     {
-        clave[i] = clave[i] + K;
+        clave[i] = clave[i] + 5;
     }
 }
 
 
 //funcion para validar al mozo
-bool ClaveV (conts Mozo &mozo){   
+bool ClaveV (const Mozo &mozo){   
      char clave[20]; 
      cout<<"ingrese su clave: "; 
      cin>>setw(20)>>clave;
