@@ -38,7 +38,7 @@ bool ClaveDeAcceso(int id_buscado, Mozo &mozoEncontrado){
     FILE* f = fopen("Mozos.dat", "rb");
     if (f==NULL)
     {
-        cout<<"no se puede abrir el archivo con los mozos";
+        cout<<"no se puede abrir el archivo con los mozos "<<endl;
         return false; 
     }
     while(fread(&m,sizeof(Mozo),1,f)==1){
