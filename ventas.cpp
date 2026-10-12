@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <cstdio>
 #include <cstring> 
@@ -225,9 +226,10 @@ int main(){
 
      cout<<"Quiere cargar otra venta: "; 
      cin>>continuar; 
-    
-
-
+     
+     
+     
+    }
 
    fclose(f); 
 
@@ -254,5 +256,8 @@ int main(){
  
 
     return 0; 
- }
 }
+
+
+
+ 
