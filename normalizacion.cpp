@@ -158,7 +158,9 @@ struct ventaHistorica{
 struct comandaHistorica {
     char fecha[11];        // "DD-MM-AAAA"
     char nombreMozo[50];   // el nombre completo, repetido en cada venta
-    int codigoProducto;    int cantidad;    float comision;
+    int codigoProducto;    
+    int cantidad;    
+    float comision;
 };
 
 void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
