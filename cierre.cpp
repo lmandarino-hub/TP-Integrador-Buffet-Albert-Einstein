@@ -161,7 +161,7 @@ p = CopiarTexto(archivoDiario, p, "comandas_");
 p = CopiarTexto(archivoDiario, p, diaTexto);
 p = CopiarTexto(archivoDiario, p, "-");
 p = CopiarTexto(archivoDiario, p, mesTexto);
-p= CopiarTexto(archivoDiario, p , "-2026.dat");
+p= CopiarTexto(archivoDiario, p , "-2025.dat");
 archivoDiario[p]='\0';
 
 if (existeArchivo(archivoDiario)){
