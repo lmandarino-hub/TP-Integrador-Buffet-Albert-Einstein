@@ -50,131 +50,10 @@ struct comandaTemp {
     Comanda datos;
 };
 
-void mostrarIDdeMozo(Mozo lista_de_mozo[], int cantidad_de_mozos){
-    for( int i = 0; i < cantidad_de_mozos - 1 ;i++){
-        int minIdx = i;
-        for (int j = i + 1; j < cantidad_de_mozos; j++){
-            if (lista_de_mozo[j].idMozo < lista_de_mozo[minIdx].idMozo){
-                minIdx = j;
-            }
-        }
-        if (minIdx != i){
-            Mozo aux = lista_de_mozo[i];
-            lista_de_mozo[i] =  lista_de_mozo[minIdx];
-            lista_de_mozo[minIdx] = aux;
-        }
-    }
-    for(int i = 0; i < cantidad_de_mozos;i++){
-        cout<< "ID: " << lista_de_mozo[i].idMozo << endl;
-        cout<< "Nombre: " << lista_de_mozo[i].Nombre << endl;
-    }
-}
-// como los datos se encontraron desordenados, utilizo ordenamiento por seleccion para ordenar los datos.
-void ordenarPorID(Mozo lista_de_mozos[], int cantidad_de_mozos){
-    for (int i = 0; i < cantidad_de_mozos - 1; i++) {
-        int minIdx = i;
-        for (int j = i + 1; j < cantidad_de_mozos; j++) {
-            if (lista_de_mozos[j].idMozo < lista_de_mozos[minIdx].idMozo) {
-                minIdx = j;
-            }
-        }
-        // Intercambiar el mínimo con la posición i
-        Mozo temp = lista_de_mozos[i];
-        lista_de_mozos[i] = lista_de_mozos[minIdx];
-        lista_de_mozos[minIdx] = temp;
-    }
-
-}
-//busco el mozo correspondiente por busqueda secuencial.
-int buscarMozo(Mozo lista_de_mozo[], int cantidad_de_mozos, int idBuscado){
-    int i = 0;
-    while (i < cantidad_de_mozos && lista_de_mozo[i].idMozo != idBuscado){
-        i++;
-    }
-    if ( i == cantidad_de_mozos){
-        return -1;
-    }
-    else{
-        return i;
-    }
-}
-
-void Calcular_totalComision(Mozo lista_de_mozos[], int cantidad_de_mozos, Comanda lista_de_comandas[], int cantidad_de_comandas){
-    for (int i = 0; i < cantidad_de_mozos; i++){
-        float totalComision = 0;
-        for (int j = 0; j < cantidad_de_comandas; j++){
-            if (lista_de_mozos[i].idMozo == lista_de_comandas[j].idMozo){
-                totalComision += lista_de_comandas[j].comision;
-            }
-        }
-        lista_de_mozos[i].totalComision = totalComision;
-    }
-}
-
-
-void generarMozoDat(){
-    FILE* mozo = fopen("mozo.dat","rb");
-    if (mozo == NULL) {
-        cout << "no se pudo generar el archivo."<< endl;
-        return; /* corta la ejecucion si no abre*/
-    }
-    Mozo lista_de_mozos[50];
-    int cantidad_de_mozos = 0;
-    Mozo m;
-
-    while(fread(&m,sizeof(Mozo),1,mozo) == 1 && cantidad_de_mozos < 50){
-        m.totalComision = 0.0f;
-        lista_de_mozos[cantidad_de_mozos] = m;
-        cantidad_de_mozos++;
-    }
-    fclose(mozo);
-
-    //ordena a los mozos por id
-    ordenarPorID(lista_de_mozos,cantidad_de_mozos);
-
-    FILE* mozo_totalComision = fopen("comandasHistoricas.dat","rb");
-    if (mozo_totalComision == NULL){
-        cout << "Error al abrir comandasHistoricas.dat" << endl;
-        return; /* corta la ejecucion si no abre*/
-    }
-    Comanda c;
-    while (fread(&c,sizeof(Comanda),1,mozo_totalComision) == 1){   
-        int posicion_del_mozo = buscarMozo(lista_de_mozos,cantidad_de_mozos,c.idMozo);
-
-        if (posicion_del_mozo != -1){
-            lista_de_mozos[posicion_del_mozo].totalComision += (c.comision * c.cantidad);
-        }
-    }
-    fclose(mozo_totalComision);
-    FILE* mozo_terminado = fopen("mozo.dat","wb");
-    if (mozo_terminado == NULL){
-        cout << "Error al abrir/generar mozo.dat" << endl;
-        return; /* corta la ejecucion si no abre*/
-    }
-    for (int i = 0; i < cantidad_de_mozos;i++){
-        fwrite(&lista_de_mozos[i],sizeof(Mozo),1,mozo_terminado);
-    }
-    fclose(mozo_terminado);
-}
-
-int buscarMozoPorNombre(Mozo lista_de_mozos[], int cantidad_de_mozos, const char* nombreBuscado) {
-    for (int i = 0; i < cantidad_de_mozos; i++) {
-        if (strcmp(lista_de_mozos[i].Nombre, nombreBuscado) == 0) {
-            return i; // Retorna el índice del mozo encontrado
-        }
-    }
-    return -1; // Retorna -1 si no se encuentra el mozo
-}
-
-// Struct temporal para ordenar los datos en memoria antes de guardarlos
-
-
-
 void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
-    comandaTemp lista_comandas[1000]; // array para guardar todas las comandas temporalmente
+    comandaTemp lista_comandas[MAX_COMANDAS]; // todas las comandas en memoria
     int cant_comandas = 0;
-    
-    // Leer ventas historicas
+
     FILE* ventasHistorico = fopen("comandas_historicas.dat", "rb");
     if (ventasHistorico == NULL) {
         cout << "Error al abrir comandas_historicas.dat" << endl;
@@ -182,7 +61,8 @@ void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
     }
 
     comandaHistorica v;
-    while (fread(&v, sizeof(comandaHistorica), 1, ventasHistorico) == 1) {
+    while (cant_comandas < MAX_COMANDAS &&
+           fread(&v, sizeof(comandaHistorica), 1, ventasHistorico) == 1) {
         // Buscamos el ID del mozo usando su nombre
         int posMozo = buscarMozoPorNombre(lista_de_mozos, cantidad_de_mozos, v.nombreMozo);
         int idReal = 0;
@@ -196,20 +76,18 @@ void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
         lista_comandas[cant_comandas].datos.codigoProducto = v.codigoProducto;
         lista_comandas[cant_comandas].datos.cantidad = v.cantidad;
         lista_comandas[cant_comandas].datos.comision = v.comision;
-        
+
         cant_comandas++;
     }
     fclose(ventasHistorico);
 
-    // Ordenas comandas (Primero por fecha, despues por idMozo para que queden agrupadas)
+    // Ordenamos las comandas: primero por fecha, despues por idMozo para que queden agrupadas
     for (int i = 0; i < cant_comandas - 1; i++) {
         for (int j = i + 1; j < cant_comandas; j++) {
-            // Si la fecha j es menor (va antes), o si son la misma fecha pero el idMozo j es menor
-            if (strcmp(lista_comandas[j].fecha, lista_comandas[i].fecha) < 0 || 
-               (strcmp(lista_comandas[j].fecha, lista_comandas[i].fecha) == 0 && 
-                lista_comandas[j].datos.idMozo < lista_comandas[i].datos.idMozo)) {
-                
-                // Intercambio
+            int cmp = compararFechas(lista_comandas[j].fecha, lista_comandas[i].fecha);
+            if (cmp < 0 ||
+               (cmp == 0 && lista_comandas[j].datos.idMozo < lista_comandas[i].datos.idMozo)) {
+
                 comandaTemp aux = lista_comandas[i];
                 lista_comandas[i] = lista_comandas[j];
                 lista_comandas[j] = aux;
@@ -220,7 +98,7 @@ void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
     // Corte de control para generar archivos diarios
     int i = 0;
     while (i < cant_comandas) {
-        // Nos guardamos la fecha que rige para este grupo
+        // Guardamos la fecha que rige para este grupo
         char fechaActual[11];
         strcpy(fechaActual, lista_comandas[i].fecha); 
 
@@ -246,6 +124,43 @@ void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
     
     cout << "Ventas separadas exitosamente por dia." << endl;
 }
+
+// Corte de control para generar los archivos diarios
+    int i = 0;
+    int archivosGenerados = 0;
+    while (i < cant_comandas) {
+        // Nos guardamos la fecha que rige para este grupo
+        char fechaActual[11];
+        strcpy(fechaActual, lista_comandas[i].fecha);
+
+        // Armamos el nombre del archivo: "comandas_DD-MM-AAAA.dat"
+        char nombreArchivo[50];
+        strcpy(nombreArchivo, "comandas_");
+        strcat(nombreArchivo, fechaActual);
+        strcat(nombreArchivo, ".dat");
+
+        // Al abrir en "wb" se crea un archivo nuevo para este dia
+        FILE* archivoDia = fopen(nombreArchivo, "wb");
+        if (archivoDia == NULL) {
+            cout << "Error al crear " << nombreArchivo << endl;
+            return;
+        }
+
+        // Mientras la fecha siga siendo la misma (corte de control)
+        while (i < cant_comandas && strcmp(lista_comandas[i].fecha, fechaActual) == 0) {
+            // Grabamos solo la parte 'datos', que es el struct Comanda
+            fwrite(&lista_comandas[i].datos, sizeof(Comanda), 1, archivoDia);
+            i++;
+        }
+
+        // Cuando cambia la fecha, cerramos el archivo del dia
+        fclose(archivoDia);
+        archivosGenerados++;
+
+         cout << "Ventas separadas por dia: " << archivosGenerados << " archivos generados." << endl;
+         
+    }
+
 
 void actualizarStock() {
     // 1. CARGAR EL INVENTARIO EN MEMORIA
