@@ -3,12 +3,18 @@
 #include <cstring> 
 using namespace std;
 
+const int K = 5;
+const int MAX_MOZOS = 50;
+const int MAX_COMANDAS = 1000;
+const int MAX_PRODUCTOS = 200;
+
 struct Mozo{
     int idMozo;
     char Nombre[50];
     char password[20];
     float totalComision;
 };
+
 struct Comanda{
     int idMozo;
     int codigoProducto;
@@ -23,6 +29,26 @@ struct Producto{
     int stockActual;
 };
 
+struct comandaHistorica {
+    char fecha[11];        // "DD-MM-AAAA"
+    char nombreMozo[50];   // el nombre completo, repetido en cada venta
+    int codigoProducto;    
+    int cantidad;    
+    float comision;
+};
+
+struct ventaHistorica{
+    char fecha[11];
+    char nombreMozo[50];
+    int codigoProducto;
+    int cantidad;
+    float comision;
+};
+
+struct comandaTemp {
+    char fecha[11];
+    Comanda datos;
+};
 
 void mostrarIDdeMozo(Mozo lista_de_mozo[], int cantidad_de_mozos){
     for( int i = 0; i < cantidad_de_mozos - 1 ;i++){
@@ -141,27 +167,8 @@ int buscarMozoPorNombre(Mozo lista_de_mozos[], int cantidad_de_mozos, const char
 }
 
 // Struct temporal para ordenar los datos en memoria antes de guardarlos
-struct comandaTemp {
-    char fecha[11];
-    Comanda datos;
-};
 
-struct ventaHistorica{
 
-    char fecha[11];
-    char nombreMozo[50];
-    int codigoProducto;
-    int cantidad;
-    float comision;
-};
-
-struct comandaHistorica {
-    char fecha[11];        // "DD-MM-AAAA"
-    char nombreMozo[50];   // el nombre completo, repetido en cada venta
-    int codigoProducto;    
-    int cantidad;    
-    float comision;
-};
 
 void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
     comandaTemp lista_comandas[1000]; // array para guardar todas las comandas temporalmente
