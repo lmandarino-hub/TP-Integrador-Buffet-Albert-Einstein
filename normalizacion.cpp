@@ -81,7 +81,7 @@ void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
     }
     fclose(ventasHistorico);
 
-    // Ordenamos las comandas: primero por fecha, despues por idMozo para que queden agrupadas
+    // Ordenamos las comandas
     for (int i = 0; i < cant_comandas - 1; i++) {
         for (int j = i + 1; j < cant_comandas; j++) {
             int cmp = compararFechas(lista_comandas[j].fecha, lista_comandas[i].fecha);
@@ -113,12 +113,12 @@ void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
 
         // Mientras no nos pasemos del total y la fecha siga siendo la misma (corte de control)
         while (i < cant_comandas && strcmp(lista_comandas[i].fecha, fechaActual) == 0) {
-            // Grabamos sólo la parte 'datos' que es el struct Comanda original
+            
             fwrite(&lista_comandas[i].datos, sizeof(Comanda), 1, archivoDia);
             i++; // Avanzamos al siguiente registro
         }
         
-        // Cuando cambia la fecha (termina el while interno), cerramos el archivo del día
+        // Cuando cambia la fecha, cerramos el archivo del día
         fclose(archivoDia); 
     }
     
@@ -146,9 +146,8 @@ void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
             return;
         }
 
-        // Mientras la fecha siga siendo la misma (corte de control)
         while (i < cant_comandas && strcmp(lista_comandas[i].fecha, fechaActual) == 0) {
-            // Grabamos solo la parte 'datos', que es el struct Comanda
+            
             fwrite(&lista_comandas[i].datos, sizeof(Comanda), 1, archivoDia);
             i++;
         }
@@ -179,17 +178,17 @@ void actualizarStock() {
 
     FILE* ventasHistorico = fopen("comandas_historicas.dat", "rb");
     if (ventasHistorico != NULL) {
-        ventasHistorico v; // Usá el nombre de tu struct acá (ventaHistorica o ComandaHistorica)
+        comandaHistorica v;
 
-        while (fread(&v, sizeof(ventaHistorica), 1, ventasHistorico) == 1) {
-            // Buscamos el producto vendido en nuestro arreglo
+        while (fread(&v, sizeof(comandaHistorica), 1, ventasHistorico) == 1) {
+            // Buscamos el producto vendido en nuestro array
+
             for(int i = 0; i < cant_inventario; i++) {
                 if(inventario[i].codigo == v.codigoProducto) {
 
                     // Restamos la cantidad vendida
                     inventario[i].stockActual -= v.cantidad;
 
-                    // CASO RARO PARA EL ORAL: Evitar stock negativo
                     if (inventario[i].stockActual < 0) {
                         inventario[i].stockActual = 0;
 
@@ -206,8 +205,39 @@ void actualizarStock() {
      }
  }
 
+comandaHistorica v;
+    while (fread(&v, sizeof(comandaHistorica), 1, ventasHistorico) == 1) {
+        // Buscamos el producto vendido en el array
+        for (int i = 0; i < cant_inventario; i++) {
+            if (inventario[i].codigo == v.codigoProducto) {
+
+                inventario[i].stockActual -= v.cantidad;
+
+                // Evitar stock negativo
+                if (inventario[i].stockActual < 0) {
+                    inventario[i].stockActual = 0;
+                }
+
+                break; // Stock actualizado
+            }
+        }
+    }
+    fclose(ventasHistorico);
+
+    // Sobrescribir el archivo con el stock actualizado
+    archInv = fopen("inventario.dat", "wb");
+    if (archInv == NULL) {
+        cout << "Error: No se pudo escribir inventario.dat." << endl;
+        return;
+    }
+    for (int i = 0; i < cant_inventario; i++) {
+        fwrite(&inventario[i], sizeof(Producto), 1, archInv);
+    }
+    fclose(archInv);
+    cout << "Stock actualizado exitosamente en inventario.dat." << endl;
+    }
+
 int main(){
-    generarMozoDat();
-    actualizarStock();
+
     return 0;
 }
