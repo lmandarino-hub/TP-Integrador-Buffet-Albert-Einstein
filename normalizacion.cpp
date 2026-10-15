@@ -82,7 +82,7 @@ int buscarMozoPorNombre(Mozo lista[], int cantidad, const char nombreBuscado[]){
 
 // Compara fechas con formato DD-MM-AAAA (devuelve <0, 0 o >0)
 int compararFechas(const char a[], const char b[]){
-    int r = strncmp(a + 6, b + 6, 4);   // anio
+    int r = strncmp(a + 6, b + 6, 4);   // año
     if (r != 0) return r;
     r = strncmp(a + 3, b + 3, 2);       // mes
     if (r != 0) return r;
@@ -270,7 +270,7 @@ void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
 }
 
 void actualizarStock() {
-    // 1. Cargar el inventario en memoria
+    // Cargar el inventario en memoria
     Producto inventario[MAX_PRODUCTOS];
     int cant_inventario = 0;
 
@@ -285,7 +285,7 @@ void actualizarStock() {
     }
     fclose(archInv);
 
-    // 2. Restar las cantidades vendidas
+    // Restar las cantidades vendidas
     FILE* ventasHistorico = fopen("comandas_historicas.dat", "rb");
     if (ventasHistorico == NULL) {
         cout << "Error: No se pudo abrir comandas_historicas.dat" << endl;
@@ -310,7 +310,7 @@ void actualizarStock() {
     }
     fclose(ventasHistorico);
 
-    // 3. Sobrescribir el archivo con el stock actualizado
+    // Sobrescribir el archivo con el stock actualizado
     archInv = fopen("inventario.dat", "wb");
     if (archInv == NULL) {
         cout << "Error: No se pudo escribir inventario.dat." << endl;
@@ -328,10 +328,10 @@ int main(){
     Mozo lista_de_mozos[MAX_MOZOS];
     int cantidad_de_mozos = 0;
 
-    generarMozosDat(lista_de_mozos, cantidad_de_mozos);       // 1. mozos.dat
+    generarMozosDat(lista_de_mozos, cantidad_de_mozos);       
     if (cantidad_de_mozos > 0) {
         mostrarMozosYComisiones();
-        separarVentas(lista_de_mozos, cantidad_de_mozos);     // 2. comandas_DD-MM-AAAA.dat
+        separarVentas(lista_de_mozos, cantidad_de_mozos);     
         actualizarStock();                                    
     }
 
