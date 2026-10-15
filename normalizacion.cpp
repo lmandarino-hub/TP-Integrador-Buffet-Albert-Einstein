@@ -158,45 +158,43 @@ void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
         archivosGenerados++;
 
          cout << "Ventas separadas por dia: " << archivosGenerados << " archivos generados." << endl;
-         
+
     }
 
-
 void actualizarStock() {
-    // 1. CARGAR EL INVENTARIO EN MEMORIA
-    Producto inventario[200]; // Arreglo con tamaño de sobra para los productos
+    // 1. Cargar el inventario en memoria
+    Producto inventario[MAX_PRODUCTOS];
     int cant_inventario = 0;
-    
+
     FILE* archInv = fopen("inventario.dat", "rb");
-    if (archInv != NULL) {
-        while (fread(&inventario[cant_inventario], sizeof(Producto), 1, archInv) == 1) {
-            cant_inventario++;
-        }
-        fclose(archInv);
-    } else {
+    if (archInv == NULL) {
         cout << "Error: No se pudo abrir inventario.dat." << endl;
         return;
     }
+    while (cant_inventario < MAX_PRODUCTOS &&
+           fread(&inventario[cant_inventario], sizeof(Producto), 1, archInv) == 1) {
+        cant_inventario++;
+    }
+    fclose(archInv);
 
-    // 2. LEER VENTAS HISTÓRICAS Y RESTAR STOCK
     FILE* ventasHistorico = fopen("comandas_historicas.dat", "rb");
     if (ventasHistorico != NULL) {
-        ventaHistorica v; // Usá el nombre de tu struct acá (ventaHistorica o ComandaHistorica)
-        
+        ventasHistorico v; // Usá el nombre de tu struct acá (ventaHistorica o ComandaHistorica)
+
         while (fread(&v, sizeof(ventaHistorica), 1, ventasHistorico) == 1) {
             // Buscamos el producto vendido en nuestro arreglo
             for(int i = 0; i < cant_inventario; i++) {
                 if(inventario[i].codigo == v.codigoProducto) {
-                    
+
                     // Restamos la cantidad vendida
                     inventario[i].stockActual -= v.cantidad;
-                    
+
                     // CASO RARO PARA EL ORAL: Evitar stock negativo
                     if (inventario[i].stockActual < 0) {
                         inventario[i].stockActual = 0;
-                    
+
                     }
-                    
+
                     break; // Cortamos el for porque ya actualizamos este producto
                 }
             }
@@ -205,18 +203,8 @@ void actualizarStock() {
     } else {
         cout << "Error: No se pudo abrir comandas_historicas.dat" << endl;
         return;
-    }
-
-    // Sobrescribir el archivo con el stock actualizado
-    archInv = fopen("inventario.dat", "wb");
-    if (archInv != NULL) {
-        for(int i = 0; i < cant_inventario; i++) {
-            fwrite(&inventario[i], sizeof(Producto), 1, archInv);
-        }
-        fclose(archInv);
-        cout << "Stock actualizado exitosamente en inventario.dat." << endl;
-    }
-}
+     }
+ }
 
 int main(){
     generarMozoDat();
