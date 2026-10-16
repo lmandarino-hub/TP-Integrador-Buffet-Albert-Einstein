@@ -13,7 +13,7 @@ Longo Atamañuk Sebastian Valentin Langur213
 Manuel Enrique Guevara Isturiz Manueh05xd
 ---
 
-## Pasos a seguir para correr el codigo:
+# Pasos a seguir para correr el codigo:
 
 1- Correr "Normalizacion.cpp" una sola vez y el resto de las veces iniciar desde "ventas.cpp"
 ---
