@@ -1,7 +1,16 @@
 #include <iostream>
-#include <cstdio> 
-#include <cstring> 
+#include <cstdio>
+#include <cstring>
 using namespace std;
+
+const int K = 5;
+const int MAX_MOZOS = 50;
+const int MAX_COMANDAS = 1000;
+const int MAX_PRODUCTOS = 200;
+
+const char* PALABRAS[] = {"sol", "luna", "mar", "rio", "cielo"};
+const int CANT_PALABRAS = 5;
+
 
 struct Mozo{
     int idMozo;
@@ -9,6 +18,22 @@ struct Mozo{
     char password[20];
     float totalComision;
 };
+
+struct Producto{
+    int codigo;
+    char descrippcion[50];
+    float precio;
+    int stockActual;
+};
+
+struct ComandaHistorica{
+    char fecha[11];
+    char nombreMozo[50];
+    int codigoProducto;
+    int cantidad;
+    float comision;
+};
+
 struct Comanda{
     int idMozo;
     int codigoProducto;
@@ -16,34 +41,19 @@ struct Comanda{
     float comision;
 };
 
-struct Producto{
-    int codigo;
-    char descripcion[50];
-    float precio;
-    int stockActual;
+struct ComandaTemp{
+    char fecha[11];
+    Comanda datos;
 };
 
 
-void mostrarIDdeMozo(Mozo lista_de_mozo[], int cantidad_de_mozos){
-    for( int i = 0; i < cantidad_de_mozos - 1 ;i++){
-        int minIdx = i;
-        for (int j = i + 1; j < cantidad_de_mozos; j++){
-            if (lista_de_mozo[j].idMozo < lista_de_mozo[minIdx].idMozo){
-                minIdx = j;
-            }
-        }
-        if (minIdx != i){
-            Mozo aux = lista_de_mozo[i];
-            lista_de_mozo[i] =  lista_de_mozo[minIdx];
-            lista_de_mozo[minIdx] = aux;
-        }
-    }
-    for(int i = 0; i < cantidad_de_mozos;i++){
-        cout<< "ID: " << lista_de_mozo[i].idMozo << endl;
-        cout<< "Nombre: " << lista_de_mozo[i].Nombre << endl;
+void CifrarClave(char clave[]){
+    for (int i = 0; clave[i] != '\0'; i++){
+        clave[i] = clave[i]+K;
     }
 }
-// como los datos se encontraron desordenados, utilizo ordenamiento por seleccion para ordenar los datos.
+
+// Ordenamiento por seleccion
 void ordenarPorID(Mozo lista_de_mozos[], int cantidad_de_mozos){
     for (int i = 0; i < cantidad_de_mozos - 1; i++) {
         int minIdx = i;
@@ -52,88 +62,122 @@ void ordenarPorID(Mozo lista_de_mozos[], int cantidad_de_mozos){
                 minIdx = j;
             }
         }
-        // Intercambiar el mínimo con la posición i
         Mozo temp = lista_de_mozos[i];
         lista_de_mozos[i] = lista_de_mozos[minIdx];
         lista_de_mozos[minIdx] = temp;
     }
-
 }
-//busco el mozo correspondiente por busqueda secuencial.
-int buscarMozo(Mozo lista_de_mozo[], int cantidad_de_mozos, int idBuscado){
+
+// Busqueda secuencial
+int buscarMozoPorNombre(Mozo lista[], int cantidad, const char nombreBuscado[]){
     int i = 0;
-    while (i < cantidad_de_mozos && lista_de_mozo[i].idMozo != idBuscado){
+    while (i < cantidad && strcmp(lista[i].Nombre, nombreBuscado) != 0){
         i++;
     }
-    if ( i == cantidad_de_mozos){
+    if (i == cantidad) {
         return -1;
     }
-    else{
-        return i;
-    }
+    return i;
 }
 
-void Calcular_totalComision(Mozo lista_de_mozos[], int cantidad_de_mozos, Comanda lista_de_comandas[], int cantidad_de_comandas){
-    for (int i = 0; i < cantidad_de_mozos; i++){
-        float totalComision = 0;
-        for (int j = 0; j < cantidad_de_comandas; j++){
-            if (lista_de_mozos[i].idMozo == lista_de_comandas[j].idMozo){
-                totalComision += lista_de_comandas[j].comision;
+int compararFechas(const char a[], const char b[]){
+    int r = strncmp(a + 6, b + 6, 4);   // año
+    if (r != 0) return r;
+    r = strncmp(a + 3, b + 3, 2);       // mes
+    if (r != 0) return r;
+    return strncmp(a, b, 2);            // dia
+}
+
+void generarMozosDat(Mozo lista_de_mozos[], int &cantidad_de_mozos){
+    cantidad_de_mozos = 0;
+
+    FILE* archivoComandas = fopen("comandas_historicas.dat", "rb");
+    if (archivoComandas == NULL){
+        cout << "Error: No se pudo abrir comandas_historicas.dat" << endl;
+        return;
+    }
+
+    ComandaHistorica c;
+
+    while (fread(&c, sizeof(ComandaHistorica), 1, archivoComandas) == 1){
+        int pos = buscarMozoPorNombre(lista_de_mozos, cantidad_de_mozos, c.nombreMozo);
+
+        if (pos != -1){
+            // acumulamos su comision
+            lista_de_mozos[pos].totalComision += c.comision;
+        } else if (cantidad_de_mozos < MAX_MOZOS) {
+            // le asignamos un id a cada mozo
+            int id = cantidad_de_mozos + 1;
+
+            char clave[20];
+            if (id <= CANT_PALABRAS) {
+                strcpy(clave, PALABRAS[id - 1]);
+            } else {
+                sprintf(clave, "%s%d", PALABRAS[(id - 1) % CANT_PALABRAS], id);
             }
+            cout << "ID: " << id << " | " << c.nombreMozo
+                 << " | clave para ingresar: " << clave << endl;
+            
+
+            Mozo& nuevo = lista_de_mozos[cantidad_de_mozos];
+            nuevo.idMozo = id;
+            int i = 0;
+            while (c.nombreMozo[i] != '\0' && i < (int)sizeof(nuevo.Nombre) - 1) {
+                nuevo.Nombre[i] = c.nombreMozo[i];
+                i++;
+            }
+            nuevo.Nombre[i] = '\0';
+            int j = 0;
+            while (clave[j] != '\0' && j < (int)sizeof(nuevo.password) - 1) {
+                nuevo.password[j] = clave[j];
+                j++;
+            }
+            nuevo.password[j] = '\0';
+
+            nuevo.totalComision = c.comision;
+            cantidad_de_mozos++;
         }
-        lista_de_mozos[i].totalComision = totalComision;
     }
+    fclose(archivoComandas);
+
+    if (cantidad_de_mozos == 0) {
+        cout << "No se encontraron registros en comandas_historicas.dat" << endl;
+        return;
+    }
+
+    ordenarPorID(lista_de_mozos, cantidad_de_mozos);
+
+    FILE* mozos_terminado = fopen("mozos.dat", "wb");
+    if (mozos_terminado == NULL){
+        cout << "Error al generar/escribir mozos.dat" << endl;
+        return;
+    }
+    for (int i = 0; i < cantidad_de_mozos; i++){
+         CifrarClave(lista_de_mozos[i].password);
+        fwrite(&lista_de_mozos[i], sizeof(Mozo), 1, mozos_terminado);
+    }
+    fclose(mozos_terminado);
+
+    cout << endl << "El archivo mozos.dat generado y ordenado por ID con exito." << endl;
 }
 
-
-void generarMozoDat(){
-    FILE* mozo = fopen("mozo.dat","rb");
-    if (mozo == NULL) {
-        cout << "no se pudo generar el archivo."<< endl;
-        return; /* corta la ejecucion si no abre*/
+// Muestra por pantalla el contenido
+void mostrarMozosYComisiones() {
+    FILE* archivo = fopen("mozos.dat", "rb");
+    if (archivo == NULL) {
+        cout << "No se pudo leer mozos.dat" << endl;
+        return;
     }
-    Mozo lista_de_mozos[50];
-    int cantidad_de_mozos = 0;
+
     Mozo m;
-
-    while(fread(&m,sizeof(Mozo),1,mozo) == 1 && cantidad_de_mozos < 50){
-        m.totalComision = 0.0f;
-        lista_de_mozos[cantidad_de_mozos] = m;
-        cantidad_de_mozos++;
+    cout.setf(ios::fixed);
+    cout.precision(2);
+    cout << endl << "--- LISTADO DE MOZOS Y COMISIONES ---" << endl;
+    while (fread(&m, sizeof(Mozo), 1, archivo) == 1) {
+        cout << "ID: " << m.idMozo
+             << " |Nombre: " << m.Nombre
+             << " |Comision Total: $" << m.totalComision << endl;
     }
-    fclose(mozo);
-
-    //ordena a los mozos por id
-    ordenarPorID(lista_de_mozos,cantidad_de_mozos);
-
-    FILE* mozo_totalComision = fopen("comandasHistoricas.dat","rb");
-    if (mozo_totalComision == NULL){
-        cout << "Error al abrir comandasHistoricas.dat" << endl;
-        return; /* corta la ejecucion si no abre*/
-    }
-    Comanda c;
-    while (fread(&c,sizeof(Comanda),1,mozo_totalComision) == 1){   
-        int posicion_del_mozo = buscarMozo(lista_de_mozos,cantidad_de_mozos,c.idMozo);
-
-        if (posicion_del_mozo != -1){
-            lista_de_mozos[posicion_del_mozo].totalComision += (c.comision * c.cantidad);
-        }
-    }
-    fclose(mozo_totalComision);
-    FILE* mozo_terminado = fopen("mozo.dat","wb");
-    if (mozo_terminado == NULL){
-        cout << "Error al abrir/generar mozo.dat" << endl;
-        return; /* corta la ejecucion si no abre*/
-    }
-    for (int i = 0; i < cantidad_de_mozos;i++){
-        fwrite(&lista_de_mozos[i],sizeof(Mozo),1,mozo_terminado);
-    }
-    fclose(mozo_terminado);
+    fclose(archivo);
 }
 
-
-
-int main(){
-    generarMozoDat();
-    return 0;
-}
