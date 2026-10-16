@@ -3,9 +3,11 @@
 #include <cstring> 
 using namespace std; 
 //tasa de comision  
-const float TASA_COMISION = 0.10f;
 
+const float TASA_COMISION = 0.10f;
 const int M_ventas = 100;
+const int K = 5;
+const int STOCK_REPOSICION = 50;
 
 //structs 
 struct Producto
@@ -38,7 +40,7 @@ bool ClaveDeAcceso(int id_buscado, Mozo &mozoEncontrado){
     FILE* f = fopen("Mozos.dat", "rb");
     if (f==NULL)
     {
-        cout<<"no se puede abrir el archivo con los mozos";
+        cout<<"no se puede abrir el archivo con los mozos "<<endl;
         return false; 
     }
     while(fread(&m,sizeof(Mozo),1,f)==1){
@@ -57,20 +59,20 @@ void CifrarClave(char clave[])
 {
     for (int i = 0; clave[i] != '\0'; i++)
     {
-        clave[i] = clave[i] + 5;
+        clave[i] = clave[i]+K;
     }
 }
 
 
 //funcion para validar al mozo
-bool ClaveV (const Mozo &mozo){   
-     char clave[20]; 
-     cout<<"ingrese su clave: "; 
-     cin.width(20); 
+bool ClaveV (const Mozo &mozo){
+     char clave[20];
+     cout<<"ingrese su clave: ";
+     cin.width(20);
      cin>>clave;
-      CifrarClave(clave);
-      return strcmp(clave,mozo.PassWord)==0;  
- }
+     CifrarClave(clave);      
+     return strcmp(clave,mozo.PassWord)==0;
+}
 
 //funcion para buscar un producto
 bool BProducto(int C_Producto, Producto &producto){ 
@@ -90,6 +92,32 @@ bool BProducto(int C_Producto, Producto &producto){
     fclose(f);
     return false; 
     
+}
+
+//funcion para actualizar stock en el momento
+void ActualizarStock(int codigo, int cantidad){
+    FILE* f = fopen("inventario.dat", "rb+");
+    if (f == NULL){
+        cout << "no se pudo abrir inventario.dat para actualizar el stock." << endl;
+        return;
+    }
+    Producto p;
+    while (fread(&p, sizeof(Producto), 1, f) == 1){
+        if (p.codigo == codigo){
+            p.stockActual -= cantidad;
+            if (p.stockActual <= 0){
+                p.stockActual = STOCK_REPOSICION;
+                cout << "Stock agotado: se repuso " << p.descrippcion
+                     << " a " << STOCK_REPOSICION << " unidades." << endl;
+            }
+            
+            fseek(f, -(long)sizeof(Producto), SEEK_CUR);
+            fwrite(&p, sizeof(Producto), 1, f);
+            fclose(f);
+            return;
+        }
+    }
+    fclose(f);
 }
 
 //funcion para ordenar las ventas con el id del mozo 
@@ -213,6 +241,7 @@ int main(){
      listaVentas[Cant_Ventas] = nuevaVEnta; 
      Cant_Ventas++;
      fwrite(&nuevaVEnta, sizeof(ventas), 1, f);
+     ActualizarStock(codigo_prod, cantidad); 
      cout << "ventas guardadas. " << endl; 
      cout << "Total de ventas: $" << totalVenta << endl;  
      cout << "comision: $" <<comision << endl;   
@@ -225,9 +254,10 @@ int main(){
 
      cout<<"Quiere cargar otra venta: "; 
      cin>>continuar; 
-    
-
-
+     
+     
+     
+    }
 
    fclose(f); 
 
@@ -255,4 +285,3 @@ int main(){
 
     return 0; 
 }
-  }
