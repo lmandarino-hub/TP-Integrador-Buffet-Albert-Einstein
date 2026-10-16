@@ -81,7 +81,7 @@ int buscarMozoPorNombre(Mozo lista[], int cantidad, const char nombreBuscado[]){
 }
 
 int compararFechas(const char a[], const char b[]){
-    int r = strncmp(a + 6, b + 6, 4);   // aÃ±o
+    int r = strncmp(a + 6, b + 6, 4);   // año
     if (r != 0) return r;
     r = strncmp(a + 3, b + 3, 2);       // mes
     if (r != 0) return r;
