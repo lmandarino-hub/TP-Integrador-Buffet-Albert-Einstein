@@ -8,8 +8,8 @@ const int MAX_MOZOS = 50;
 const int MAX_COMANDAS = 1000;
 const int MAX_PRODUCTOS = 200;
 
-const char* PALABRAS[] = {"sol", "luna", "mar", "rio", "cielo", "monte", "flor", "nube"};
-const int CANT_PALABRAS = 8;
+const char* PALABRAS[] = {"sol", "luna", "mar", "rio", "cielo"};
+const int CANT_PALABRAS = 5;
 
 
 struct Mozo{
@@ -68,7 +68,7 @@ void ordenarPorID(Mozo lista_de_mozos[], int cantidad_de_mozos){
     }
 }
 
-// Busqueda secuencial del mozo
+// Busqueda secuencial
 int buscarMozoPorNombre(Mozo lista[], int cantidad, const char nombreBuscado[]){
     int i = 0;
     while (i < cantidad && strcmp(lista[i].Nombre, nombreBuscado) != 0){
@@ -80,7 +80,6 @@ int buscarMozoPorNombre(Mozo lista[], int cantidad, const char nombreBuscado[]){
     return i;
 }
 
-// Compara fechas con formato DD-MM-AAAA (devuelve <0, 0 o >0)
 int compararFechas(const char a[], const char b[]){
     int r = strncmp(a + 6, b + 6, 4);   // año
     if (r != 0) return r;
@@ -91,11 +90,6 @@ int compararFechas(const char a[], const char b[]){
 
 void generarMozosDat(Mozo lista_de_mozos[], int &cantidad_de_mozos){
     cantidad_de_mozos = 0;
-
-    if (sizeof(ComandaHistorica) != 76){
-        cout << "Aviso: sizeof(ComandaHistorica) = " << sizeof(ComandaHistorica)
-             << " y deberia ser 76. Revisa los campos del struct." << endl;
-    }
 
     FILE* archivoComandas = fopen("comandas_historicas.dat", "rb");
     if (archivoComandas == NULL){
@@ -112,15 +106,13 @@ void generarMozosDat(Mozo lista_de_mozos[], int &cantidad_de_mozos){
             // acumulamos su comision
             lista_de_mozos[pos].totalComision += c.comision;
         } else if (cantidad_de_mozos < MAX_MOZOS) {
-            // le asignamos id
+            // le asignamos un id a cada mozo
             int id = cantidad_de_mozos + 1;
 
-            // clave inicial: una palabra segun el id
             char clave[20];
             if (id <= CANT_PALABRAS) {
                 strcpy(clave, PALABRAS[id - 1]);
             } else {
-                // si hubiera mas mozos que palabras, repetimos palabra y le sumamos el id
                 sprintf(clave, "%s%d", PALABRAS[(id - 1) % CANT_PALABRAS], id);
             }
             cout << "ID: " << id << " | " << c.nombreMozo
