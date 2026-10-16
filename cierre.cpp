@@ -157,7 +157,7 @@ for (int dia=diaInicio; dia<=diaFin; dia++){
 
 char archivoDiario[50];
 int p=0;
-p = CopiarTexto(archivoDiario, p, "comandas_");
+p = CopiarTexto(archivoDiario, p, "Comandas_");
 p = CopiarTexto(archivoDiario, p, diaTexto);
 p = CopiarTexto(archivoDiario, p, "-");
 p = CopiarTexto(archivoDiario, p, mesTexto);
