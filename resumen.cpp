@@ -9,36 +9,37 @@ struct Comanda {
     float comision;
 };
  
-FILE*leerarchivo(){
+FILEleerarchivo(){
 
     char NombreArchivo[100];
     cout << "nombre del archivo";
     cin >> NombreArchivo;
  
-    FILE*comandas_historicas = fopen(NombreArchivo, "rb");
+    FILEcomandas_historicas = fopen(NombreArchivo, "rb");
     if (comandas_historicas == NULL) {
-        cout << "Error: no se pudo abrir el archivo " << NombreArchivo << endl;  
+        cout << "Error: no se pudo abrir el archivo " << NombreArchivo << endl;
     }
+     return comandas_historicas;
 }
+
 
 void imprimirMozo(int idMozo, int cantidad, float comision) {
     cout << idMozo << "\t" << cantidad << "\t\t" << comision << endl;
-    
-}
 
-void Cortecontrol(Comanda comanda,FILE*historicas,bool& Datos,int& Actual,int& cant,float& comision, int& Buffet){
+}
+void Cortecontrol(Comanda comanda,FILEhistoricas,bool& Datos,int& Actual,int& cant,float& comision, int& Buffet){
 
 
     while (fread(&comanda, sizeof(Comanda), 1, historicas) == 1) {
         if (!Datos) {
-      
+
             Datos = true;
             Actual = comanda.idMozo;
             cout << endl << "===== RESUMEN DEL CIERRE =====" << endl;
             cout << "Mozo\tProductos\tComision" << endl;
         }
         else if (comanda.idMozo != Actual) {
-      
+
             imprimirMozo(Actual, cant, comision);
             Buffet += cant;
             Actual = comanda.idMozo;
@@ -49,20 +50,19 @@ void Cortecontrol(Comanda comanda,FILE*historicas,bool& Datos,int& Actual,int& c
         comision += comanda.comision;
     }
  
-    fclose(historicas);
- 
+    fclose(historicas);´
 }
 
-int main() {   
+int main() {
 
-FILE* comandas_historicas = leerarchivo();
+FILE comandas_historicas = leerarchivo();
 
     if (comandas_historicas == NULL) {
         return 1;
     }
 
     Comanda c;
-    bool hayDatos = false;    
+    bool hayDatos = false;
     int mozoActual = 0;
     int cantMozo = 0;
     float comisionMozo = 0;
