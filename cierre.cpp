@@ -64,13 +64,13 @@ bool existeArchivo(const char* nombreArchivo) {
     return false;
 
 }
-void crearArchivoSemanal(const char* nombreArchivo, const char* nombreArchivoDiario){
+void crearArchivoSemanal(const char* nombreArchivo, const char* nombreArchivoOrigen){
     FILE* archivoSemanal = fopen(nombreArchivo, "wb");
     if (archivoSemanal == NULL) {
         cout << "Error al crear el archivo semanal." << endl;
         return;
     }
-    FILE* archivoDiario = fopen(nombreArchivoDiario, "rb");
+    FILE* archivoDiario = fopen(nombreArchivoOrigen, "rb");
     if (archivoDiario == NULL) {
         fclose(archivoSemanal);
         return;
@@ -139,7 +139,7 @@ int diaFin= semana * 7;
 
 char temp_1[50]="temp_1.dat";
 char temp_2[50]="temp_2.dat";
-char archivoAnterior[50];
+char archivoAcumulado[50];
 int cantArchivos=0;
 int temporal=1;
 
@@ -157,7 +157,7 @@ for (int dia=diaInicio; dia<=diaFin; dia++){
 
 char archivoDiario[50];
 int p=0;
-p = CopiarTexto(archivoDiario, p, "comandas_");
+p = CopiarTexto(archivoDiario, p, "Comandas_");
 p = CopiarTexto(archivoDiario, p, diaTexto);
 p = CopiarTexto(archivoDiario, p, "-");
 p = CopiarTexto(archivoDiario, p, mesTexto);
@@ -168,15 +168,15 @@ if (existeArchivo(archivoDiario)){
     cout << "Archivo diario encontrado: " << archivoDiario << endl;
 
 if (cantArchivos == 0){
-    strcpy(archivoAnterior, archivoDiario);
+    strcpy(archivoAcumulado, archivoDiario);
 }else{
     if (temporal==1){
-        apareo(archivoAnterior, archivoDiario, temp_1);
-        strcpy(archivoAnterior, temp_1);
+        apareo(archivoAcumulado, archivoDiario, temp_1);
+        strcpy(archivoAcumulado, temp_1);
         temporal=2;
     }else {
-        apareo(archivoAnterior, archivoDiario, temp_2);
-        strcpy(archivoAnterior, temp_2);
+        apareo(archivoAcumulado, archivoDiario, temp_2);
+        strcpy(archivoAcumulado, temp_2);
         temporal=1;
     }
 }
@@ -185,8 +185,8 @@ cantArchivos++;
 }
 
 if (cantArchivos > 0){
-    crearArchivoSemanal(nombreArchivoSemanal, archivoAnterior);
-    cout <<"Archivo creado" << nombreArchivoSemanal << endl;
+    crearArchivoSemanal(nombreArchivoSemanal, archivoAcumulado);
+    cout <<"Archivo creado: " << nombreArchivoSemanal << endl;
 }else{
     cout << "No se encontraron archivos diarios" << endl;
 }
