@@ -4,12 +4,12 @@
 #include <cstring>
 using namespace std;
 
-//tasa de comision
+
 const float TASA_COMISION = 0.10f;
 const int K = 5;
-const int STOCK_REPOSICION = 50; // poné el valor que pida la consigna
+const int STOCK_REPOSICION = 50; 
 
-//structs
+
 struct Producto
 {
     int codigo;
@@ -117,14 +117,13 @@ void ActualizarStock(int codigo, int cantidad){
     fclose(f);
 }
 
-//cuenta los registros del archivo sin cargarlos en memoria
+
 long ContarVentas(FILE* f){
     fseek(f, 0, SEEK_END);
     return ftell(f) / (long)sizeof(ventas);
 }
 
-//ordena las ventas por id del mozo directamente sobre el archivo (burbuja)
-//el archivo tiene que estar abierto en modo rb+ / wb+
+//ordena las ventas por id del mozo
 void Orden_ventas(FILE* f) {
     long n = ContarVentas(f);
     ventas a, b;
@@ -143,7 +142,7 @@ void Orden_ventas(FILE* f) {
     fflush(f);
 }
 
-//funcion para mostrar las ventas leyendo el archivo registro por registro
+//funcion para mostrar las ventas 
 void Mostrar_Ventas(FILE* f)
 {
     ventas v;
@@ -161,7 +160,7 @@ void Mostrar_Ventas(FILE* f)
     }
 }
 
-// main
+
 int main(){
     string fecha;
     char continuar ='s';
@@ -171,7 +170,7 @@ int main(){
     string Nombre_A= "Comandas_"+fecha + ".dat";
     cout<<"plantilla del dia: "<< Nombre_A <<endl;
 
-    // si el archivo ya existe se abre para leer/escribir, si no se crea
+    
     FILE* f = fopen(Nombre_A.c_str(), "rb+");
     if (f==NULL)
     {
@@ -241,7 +240,7 @@ int main(){
         nuevaVenta.cantidad = cantidad;
         nuevaVenta.comision = comision;
 
-        // se agrega la venta al final del archivo, sin limite de registros
+     
         fseek(f, 0, SEEK_END);
         fwrite(&nuevaVenta, sizeof(ventas), 1, f);
         fflush(f);
