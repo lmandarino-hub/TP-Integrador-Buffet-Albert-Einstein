@@ -277,7 +277,7 @@ void actualizarStock() {
     }
     fclose(archInv);
 
-    // Restar las cantidades vendidas
+    // Resta las cantidades vendidas
     FILE* ventasHistorico = fopen("comandas_historicas.dat", "rb");
     if (ventasHistorico == NULL) {
         cout << "Error: No se pudo abrir comandas_historicas.dat" << endl;
