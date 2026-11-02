@@ -81,7 +81,7 @@ int buscarMozoPorNombre(Mozo lista[], int cantidad, const char nombreBuscado[]){
 }
 
 int compararFechas(const char a[], const char b[]){
-    int r = strncmp(a + 6, b + 6, 4);   // anio
+    int r = strncmp(a + 6, b + 6, 4);   // año
     if (r != 0) return r;
     r = strncmp(a + 3, b + 3, 2);       // mes
     if (r != 0) return r;
@@ -115,8 +115,8 @@ void generarMozosDat(Mozo lista_de_mozos[], int &cantidad_de_mozos){
             } else {
                 sprintf(clave, "%s%d", PALABRAS[(id - 1) % CANT_PALABRAS], id);
             }
-            cout << "Id: " << id << " | " << c.nombreMozo
-                 << "clave para ingresar: " << clave << endl;
+            cout << "ID: " << id << " | " << c.nombreMozo
+                 << " | clave para ingresar: " << clave << endl;
             
 
             Mozo& nuevo = lista_de_mozos[cantidad_de_mozos];
@@ -149,7 +149,7 @@ void generarMozosDat(Mozo lista_de_mozos[], int &cantidad_de_mozos){
 
     FILE* mozos_terminado = fopen("mozos.dat", "wb");
     if (mozos_terminado == NULL){
-        cout << "Error al generar mozos.dat" << endl;
+        cout << "Error al generar/escribir mozos.dat" << endl;
         return;
     }
     for (int i = 0; i < cantidad_de_mozos; i++){
@@ -158,7 +158,7 @@ void generarMozosDat(Mozo lista_de_mozos[], int &cantidad_de_mozos){
     }
     fclose(mozos_terminado);
 
-    cout << endl << "El archivo mozos.dat se genero y se encuentra ordenado por ID con exito." << endl;
+    cout << endl << "El archivo mozos.dat generado y ordenado por ID con exito." << endl;
 }
 
 // Muestra por pantalla el contenido
@@ -172,11 +172,11 @@ void mostrarMozosYComisiones() {
     Mozo m;
     cout.setf(ios::fixed);
     cout.precision(2);
-    cout << endl << "--- Listado de mozos y comisiones ---" << endl;
+    cout << endl << "--- LISTADO DE MOZOS Y COMISIONES ---" << endl;
     while (fread(&m, sizeof(Mozo), 1, archivo) == 1) {
-        cout << "Id: " << m.idMozo
-             << "Nombre: " << m.Nombre
-             << "Comision Total: $" << m.totalComision << endl;
+        cout << "ID: " << m.idMozo
+             << " |Nombre: " << m.Nombre
+             << " |Comision Total: $" << m.totalComision << endl;
     }
     fclose(archivo);
 }
@@ -262,55 +262,44 @@ void separarVentas(Mozo lista_de_mozos[], int cantidad_de_mozos) {
 }
 
 void actualizarStock() {
-    // Cargar el inventario en memoria
-    Producto inventario[MAX_PRODUCTOS];
-    int cant_inventario = 0;
-
-    FILE* archInv = fopen("inventario.dat", "rb");
+    FILE* archInv = fopen("inventario.dat", "rb+");
     if (archInv == NULL) {
         cout << "Error: No se pudo abrir inventario.dat." << endl;
         return;
     }
-    while (cant_inventario < MAX_PRODUCTOS &&
-           fread(&inventario[cant_inventario], sizeof(Producto), 1, archInv) == 1) {
-        cant_inventario++;
-    }
-    fclose(archInv);
 
-    // Resta las cantidades vendidas
     FILE* ventasHistorico = fopen("comandas_historicas.dat", "rb");
     if (ventasHistorico == NULL) {
         cout << "Error: No se pudo abrir comandas_historicas.dat" << endl;
+        fclose(archInv);
         return;
     }
 
     ComandaHistorica v;
-    while (fread(&v, sizeof(ComandaHistorica), 1, ventasHistorico) == 1) {
-        // Buscamos el producto vendido en el array
-        for (int i = 0; i < cant_inventario; i++) {
-            if (inventario[i].codigo == v.codigoProducto) {
-                inventario[i].stockActual -= v.cantidad;
+    Producto p;
 
-                // Evitar stock negativo
-                if (inventario[i].stockActual < 0) {
-                    inventario[i].stockActual = 0;
+    while (fread(&v, sizeof(ComandaHistorica), 1, ventasHistorico) == 1) {
+        // Buscamos el producto de esta venta desde el principio del inventario
+        rewind(archInv);
+        while (fread(&p, sizeof(Producto), 1, archInv) == 1) {
+            if (p.codigo == v.codigoProducto) {
+                p.stockActual -= v.cantidad;
+
+                // Evita stock negativo
+                if (p.stockActual < 0) {
+                    p.stockActual = 0;
                 }
 
-                break; // Producto actualizado, cortamos el for
+                // Volvemos un registro atrás y pisamos solo ese producto
+                fseek(archInv, -(long)sizeof(Producto), SEEK_CUR);
+                fwrite(&p, sizeof(Producto), 1, archInv);
+                fflush(archInv);
+                break; 
             }
         }
     }
-    fclose(ventasHistorico);
 
-    // Sobrescribir el archivo con el stock actualizado
-    archInv = fopen("inventario.dat", "wb");
-    if (archInv == NULL) {
-        cout << "Error: No se pudo escribir inventario.dat." << endl;
-        return;
-    }
-    for (int i = 0; i < cant_inventario; i++) {
-        fwrite(&inventario[i], sizeof(Producto), 1, archInv);
-    }
+    fclose(ventasHistorico);
     fclose(archInv);
 
     cout << "Stock actualizado exitosamente en inventario.dat." << endl;
