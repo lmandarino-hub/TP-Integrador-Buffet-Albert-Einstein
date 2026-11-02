@@ -39,7 +39,7 @@ void Cortecontrol(FILE*comando_historicas,bool& HayDatos,int& MozoActual,int& Ca
             cout << endl << "===== RESUMEN DEL CIERRE =====" << endl;
             cout << "Mozo\tProductos\tComision" << endl;
         }
-        else if (comando.idMozo != MozoActual) {
+        else if (comando.idMozo != MozoActual || HayDatos) {
       
             imprimirMozo(MozoActual, CantMozo, MozoComision);
             TotalBuffet += CantMozo;
@@ -50,10 +50,7 @@ void Cortecontrol(FILE*comando_historicas,bool& HayDatos,int& MozoActual,int& Ca
         CantMozo += comando.cantidad;
         MozoComision += comando.comision;
     }
-    if (HayDatos) {
-        imprimirMozo(MozoActual, CantMozo, MozoComision);
-        TotalBuffet += CantMozo;
-    }
+    
     fclose(comando_historicas);
  
 }
