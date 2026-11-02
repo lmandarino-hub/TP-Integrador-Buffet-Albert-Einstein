@@ -85,11 +85,14 @@ void crearArchivoSemanal(const char* nombreArchivo, const char* nombreArchivoOri
 int main (){
     int semana;
     int mes;
+    int anio;
 
     cout << "Ingrese la semana (1-4):";
     cin >> semana;
     cout << "Ingrese el mes (1-12):";
     cin >> mes;
+    cout << "Ingrese el anio: "; 
+    cin >> anio;
 
     if (semana < 1 || semana > 4) {
         cout << "Error" << endl;
@@ -144,6 +147,14 @@ int cantArchivos=0;
 int temporal=1;
 
 char diaTexto[3];
+char anioTexto[5];
+
+anioTexto[0]=(anio/1000)+'0';
+anioTexto[1]=((anio/100)%10)+'0';
+anioTexto[2]=((anio/10)%10)+'0';
+anioTexto[3]=(anio%10)+'0';
+anioTexto[4]='\0';
+
 for (int dia=diaInicio; dia<=diaFin; dia++){
     if (dia<10){
         diaTexto[0]='0';
@@ -157,11 +168,13 @@ for (int dia=diaInicio; dia<=diaFin; dia++){
 
 char archivoDiario[50];
 int p=0;
-p = CopiarTexto(archivoDiario, p, "Comandas_");
+p = CopiarTexto(archivoDiario, p, "comandas_");
 p = CopiarTexto(archivoDiario, p, diaTexto);
 p = CopiarTexto(archivoDiario, p, "-");
 p = CopiarTexto(archivoDiario, p, mesTexto);
-p= CopiarTexto(archivoDiario, p , "-2026.dat");
+p= CopiarTexto(archivoDiario, p , "-");
+p= CopiarTexto(archivoDiario, p , anioTexto);
+p= CopiarTexto(archivoDiario, p , ".dat");
 archivoDiario[p]='\0';
 
 if (existeArchivo(archivoDiario)){

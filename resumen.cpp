@@ -9,114 +9,76 @@ struct Comanda {
     float comision;
 };
  
-FILEleerarchivo(){
-
-    char NombreArchivo[100];
-    cout << "nombre del archivo";
-    cin >> NombreArchivo;
- 
-    FILEcomandas_historicas = fopen(NombreArchivo, "rb");
-    if (comandas_historicas == NULL) {
-        cout << "Error: no se pudo abrir el archivo " << NombreArchivo << endl;
-    }
-     return comandas_historicas;
-}
-
-
-void imprimirMozo(int idMozo, int cantidad, float comision) {
-    cout << idMozo << "\t" << cantidad << "\t\t" << comision << endl;
-
-}
-void Cortecontrol(Comanda comanda,FILEhistoricas,bool& Datos,int& Actual,int& cant,float& comision, int& Buffet){
-
-
-    while (fread(&comanda, sizeof(Comanda), 1, historicas) == 1) {
-        if (!Datos) {
-
-            Datos = true;
-            Actual = comanda.idMozo;
-            cout << endl << "===== RESUMEN DEL CIERRE =====" << endl;
-            cout << "Mozo\tProductos\tComision" << endl;
-        }
-        else if (comanda.idMozo != Actual) {
-
-            imprimirMozo(Actual, cant, comision);
-            Buffet += cant;
-            Actual = comanda.idMozo;
-            cant = 0;
-            comision = 0;
-        }
-        cant += comanda.cantidad;
-        comision += comanda.comision;
-    }
- 
-    fclose(historicas);´
-}
-
 FILE* leerarchivo(){
-    char NombreArchivo[100];
-    cout << "Nombre del archivo: ";
-    cin >> NombreArchivo;
 
+    char NombreArchivo[100];
+    cout << "nombre del archivo: ";
+    cin >> NombreArchivo;
+ 
     FILE* comandas_historicas = fopen(NombreArchivo, "rb");
     if (comandas_historicas == NULL) {
-        cout << "Error: no se pudo abrir el archivo " << NombreArchivo << endl;
+        cout << "Error: no se pudo abrir el archivo " << NombreArchivo << endl;  
     }
     return comandas_historicas;
 }
 
-void imprimirMozo(int idMozo, int cantidad, float comision) {
-    cout << idMozo << "\t" << cantidad << "\t\t" << comision << endl;
+void imprimirMozo(int idMozo, int cantidadmozo, float comisionmozo) {
+    cout << idMozo << "\t" << cantidadmozo << "\t\t" << comisionmozo << endl;
+    
 }
 
-void Cortecontrol(Comanda comanda, FILE* historicas, bool& Datos, int& Actual,
-                  int& cant, float& comision, int& Buffet){
+void Cortecontrol(FILE*comando_historicas,bool& HayDatos,int& MozoActual,int& CantMozo,float& MozoComision, int& TotalBuffet){
 
-    while (fread(&comanda, sizeof(Comanda), 1, historicas) == 1) {
-        if (!Datos) {
-            Datos = true;
-            Actual = comanda.idMozo;
+    Comanda comando;
+
+    while (fread(&comando, sizeof(Comanda), 1, comando_historicas) == 1) {
+        if (!HayDatos) {
+      
+            HayDatos = true;
+            MozoActual = comando.idMozo;
             cout << endl << "===== RESUMEN DEL CIERRE =====" << endl;
             cout << "Mozo\tProductos\tComision" << endl;
         }
-        else if (comanda.idMozo != Actual) {
-            imprimirMozo(Actual, cant, comision);
-            Buffet += cant;
-            Actual = comanda.idMozo;
-            cant = 0;
-            comision = 0;
+        else if (comando.idMozo != MozoActual) {
+      
+            imprimirMozo(MozoActual, CantMozo, MozoComision);
+            TotalBuffet += CantMozo;
+            MozoActual = comando.idMozo;
+            CantMozo = 0;
+            MozoComision = 0;
         }
-        cant += comanda.cantidad;
-        comision += comanda.comision;
+        CantMozo += comando.cantidad;
+        MozoComision += comando.comision;
     }
-
-    fclose(historicas);
+    if (HayDatos) {
+        imprimirMozo(MozoActual, CantMozo, MozoComision);
+        TotalBuffet += CantMozo;
+    }
+    fclose(comando_historicas);
+ 
 }
 
-int main() {
-    FILE comandas_historicas = leerarchivo();
+int main() {   
+
+FILE* comandas_historicas = leerarchivo();
 
     if (comandas_historicas == NULL) {
         return 1;
     }
 
-    Comanda c;
-    bool hayDatos = false;
+    bool hayDatos = false;    
     int mozoActual = 0;
     int cantMozo = 0;
     float comisionMozo = 0;
     int totalBuffet = 0;
 
+    Cortecontrol(comandas_historicas,hayDatos,mozoActual,cantMozo,comisionMozo,totalBuffet);
 
-   
-Cortecontrol(c,comandas_historicas,hayDatos,mozoActual,cantMozo,comisionMozo,totalBuffet);
-
- if (!hayDatos) {
+    if (!hayDatos) {
         cout << "El archivo no tiene ventas." << endl;
-        return 0;
+        return 1;
     }
-    imprimirMozo(mozoActual, cantMozo, comisionMozo);
-    totalBuffet += cantMozo;
+
     cout << "------------------------------" << endl;
     cout << "TOTAL de productos vendidos en la semana: " << totalBuffet << endl;
  
