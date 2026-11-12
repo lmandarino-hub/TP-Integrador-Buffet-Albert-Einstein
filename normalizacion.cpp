@@ -184,7 +184,7 @@ void generarMozosDat(Mozo lista_de_mozos[], int &cantidad_de_mozos){
     cout << endl << "El archivo mozos.dat generado y ordenado por ID con exito." << endl;
 }
 
-// Muestra por pantalla el contenido
+
 void mostrarMozosYComisiones() {
     FILE* archivo = fopen("mozos.dat", "rb");
     if (archivo == NULL) {

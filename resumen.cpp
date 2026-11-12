@@ -28,7 +28,7 @@ void imprimirMozo(int idMozo, int cantidadmozo, float comisionmozo) {
 void Cortecontrol(FILE* comandas_historicas, bool& HayDatos, int& TotalBuffet) {
     Comanda comando;
 
-    // lectura anticipada: leido vale 1 si hay registro, 0 si terminó el archivo
+   
     int leido = fread(&comando, sizeof(Comanda), 1, comandas_historicas);
 
     if (leido == 1) {
@@ -38,18 +38,18 @@ void Cortecontrol(FILE* comandas_historicas, bool& HayDatos, int& TotalBuffet) {
     }
 
     while (leido == 1) {
-        int MozoActual = comando.idMozo;   // clave de control del grupo
-        int CantMozo = 0;                  // acumuladores del grupo
+        int MozoActual = comando.idMozo;   
+        int CantMozo = 0;                  
         float MozoComision = 0;
 
-        // el grupo sigue mientras haya registro Y sea el mismo mozo
+        
         while (leido == 1 && comando.idMozo == MozoActual) {
             CantMozo += comando.cantidad;
             MozoComision += comando.comision;
             leido = fread(&comando, sizeof(Comanda), 1, comandas_historicas);
         }
 
-        // cierre del grupo (también se ejecuta para el último mozo)
+      
         imprimirMozo(MozoActual, CantMozo, MozoComision);
         TotalBuffet += CantMozo;
     }
