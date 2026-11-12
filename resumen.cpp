@@ -1,75 +1,73 @@
 #include <iostream>
 #include <cstdio>
 using namespace std;
- 
+
 struct Comanda {
     int idMozo;
     int codigoProducto;
     int cantidad;
     float comision;
 };
- 
-FILE* leerarchivo(){
 
+FILE* leerarchivo() {
     char NombreArchivo[100];
     cout << "nombre del archivo: ";
     cin >> NombreArchivo;
- 
+
     FILE* comandas_historicas = fopen(NombreArchivo, "rb");
     if (comandas_historicas == NULL) {
-        cout << "Error: no se pudo abrir el archivo " << NombreArchivo << endl;  
+        cout << "Error: no se pudo abrir el archivo " << NombreArchivo << endl;
     }
     return comandas_historicas;
 }
 
 void imprimirMozo(int idMozo, int cantidadmozo, float comisionmozo) {
     cout << idMozo << "\t" << cantidadmozo << "\t\t" << comisionmozo << endl;
-    
 }
 
-void Cortecontrol(FILE*comando_historicas,bool& HayDatos,int& MozoActual,int& CantMozo,float& MozoComision, int& TotalBuffet){
-
+void Cortecontrol(FILE* comandas_historicas, bool& HayDatos, int& TotalBuffet) {
     Comanda comando;
 
-    while (fread(&comando, sizeof(Comanda), 1, comando_historicas) == 1) {
-        if (!HayDatos) {
-      
-            HayDatos = true;
-            MozoActual = comando.idMozo;
-            cout << endl << "===== RESUMEN DEL CIERRE =====" << endl;
-            cout << "Mozo\tProductos\tComision" << endl;
-        }
-        else if (comando.idMozo != MozoActual || HayDatos) {
-      
-            imprimirMozo(MozoActual, CantMozo, MozoComision);
-            TotalBuffet += CantMozo;
-            MozoActual = comando.idMozo;
-            CantMozo = 0;
-            MozoComision = 0;
-        }
-        CantMozo += comando.cantidad;
-        MozoComision += comando.comision;
+    // lectura anticipada: leido vale 1 si hay registro, 0 si terminó el archivo
+    int leido = fread(&comando, sizeof(Comanda), 1, comandas_historicas);
+
+    if (leido == 1) {
+        HayDatos = true;
+        cout << endl << "===== RESUMEN DEL CIERRE =====" << endl;
+        cout << "Mozo\tProductos\tComision" << endl;
     }
-    
-    fclose(comando_historicas);
- 
+
+    while (leido == 1) {
+        int MozoActual = comando.idMozo;   // clave de control del grupo
+        int CantMozo = 0;                  // acumuladores del grupo
+        float MozoComision = 0;
+
+        // el grupo sigue mientras haya registro Y sea el mismo mozo
+        while (leido == 1 && comando.idMozo == MozoActual) {
+            CantMozo += comando.cantidad;
+            MozoComision += comando.comision;
+            leido = fread(&comando, sizeof(Comanda), 1, comandas_historicas);
+        }
+
+        // cierre del grupo (también se ejecuta para el último mozo)
+        imprimirMozo(MozoActual, CantMozo, MozoComision);
+        TotalBuffet += CantMozo;
+    }
+
+    fclose(comandas_historicas);
 }
 
-int main() {   
-
-FILE* comandas_historicas = leerarchivo();
+int main() {
+    FILE* comandas_historicas = leerarchivo();
 
     if (comandas_historicas == NULL) {
         return 1;
     }
 
-    bool hayDatos = false;    
-    int mozoActual = 0;
-    int cantMozo = 0;
-    float comisionMozo = 0;
+    bool hayDatos = false;
     int totalBuffet = 0;
 
-    Cortecontrol(comandas_historicas,hayDatos,mozoActual,cantMozo,comisionMozo,totalBuffet);
+    Cortecontrol(comandas_historicas, hayDatos, totalBuffet);
 
     if (!hayDatos) {
         cout << "El archivo no tiene ventas." << endl;
@@ -78,6 +76,6 @@ FILE* comandas_historicas = leerarchivo();
 
     cout << "------------------------------" << endl;
     cout << "TOTAL de productos vendidos en la semana: " << totalBuffet << endl;
- 
+
     return 0;
 }

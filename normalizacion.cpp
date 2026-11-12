@@ -103,36 +103,59 @@ void generarMozosDat(Mozo lista_de_mozos[], int &cantidad_de_mozos){
         int pos = buscarMozoPorNombre(lista_de_mozos, cantidad_de_mozos, c.nombreMozo);
 
         if (pos != -1){
-            // acumulamos su comision
+            
             lista_de_mozos[pos].totalComision += c.comision;
         } else if (cantidad_de_mozos < MAX_MOZOS) {
-            // le asignamos un id a cada mozo
-            int id = cantidad_de_mozos + 1;
+                int id = cantidad_de_mozos + 1;
+                int indice = id - 1;
+            while (indice >= CANT_PALABRAS) {
+                indice = indice - CANT_PALABRAS;
+            }
 
             char clave[20];
-            if (id <= CANT_PALABRAS) {
-                strcpy(clave, PALABRAS[id - 1]);
-            } else {
-                sprintf(clave, "%s%d", PALABRAS[(id - 1) % CANT_PALABRAS], id);
+            int k = 0;
+            while (PALABRAS[indice][k] != 0 && k < 15) {
+                clave[k] = PALABRAS[indice][k];
+                k++;
             }
+
+            if (id > CANT_PALABRAS) {
+                
+                char digitos[10];
+                int cantDigitos = 0;
+                int n = id;
+                while (n > 0) {
+                    digitos[cantDigitos] = '0' + (n - (n / 10) * 10);
+                    n = n / 10;
+                    cantDigitos++;
+                }
+                
+                for (int d = cantDigitos - 1; d >= 0; d--) {
+                    clave[k] = digitos[d];
+                    k++;
+                }
+            }
+            clave[k] = 0;
+
             cout << "ID: " << id << " | " << c.nombreMozo
                  << " | clave para ingresar: " << clave << endl;
-            
 
             Mozo& nuevo = lista_de_mozos[cantidad_de_mozos];
             nuevo.idMozo = id;
+
             int i = 0;
-            while (c.nombreMozo[i] != '\0' && i < (int)sizeof(nuevo.Nombre) - 1) {
+            while (c.nombreMozo[i] != 0 && i < (int)sizeof(nuevo.Nombre) - 1) {
                 nuevo.Nombre[i] = c.nombreMozo[i];
                 i++;
             }
-            nuevo.Nombre[i] = '\0';
+            nuevo.Nombre[i] = 0;
+
             int j = 0;
-            while (clave[j] != '\0' && j < (int)sizeof(nuevo.password) - 1) {
+            while (clave[j] != 0 && j < (int)sizeof(nuevo.password) - 1) {
                 nuevo.password[j] = clave[j];
                 j++;
             }
-            nuevo.password[j] = '\0';
+            nuevo.password[j] = 0;
 
             nuevo.totalComision = c.comision;
             cantidad_de_mozos++;
@@ -153,7 +176,7 @@ void generarMozosDat(Mozo lista_de_mozos[], int &cantidad_de_mozos){
         return;
     }
     for (int i = 0; i < cantidad_de_mozos; i++){
-         CifrarClave(lista_de_mozos[i].password);
+        CifrarClave(lista_de_mozos[i].password);
         fwrite(&lista_de_mozos[i], sizeof(Mozo), 1, mozos_terminado);
     }
     fclose(mozos_terminado);

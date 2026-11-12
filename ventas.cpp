@@ -260,7 +260,7 @@ int main(){
     cout<<"carga finalizada"<<endl;
     cout<<"archivo: "<<Nombre_A<<endl;
     cout<<"ventas totales: "<<ContarVentas(f)<<endl;
-
+   
     fclose(f);
     return 0;
 }
